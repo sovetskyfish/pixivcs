@@ -42,10 +42,21 @@ namespace PixivCS
         {
             var array = (from key in query.AllKeys
                          from value in query.GetValues(key)
-                         select string.Format("{0}={1}", HttpUtility.UrlEncode(key), 
+                         select string.Format("{0}={1}", HttpUtility.UrlEncode(key),
                          HttpUtility.UrlEncode(value)))
                 .ToArray();
             return "?" + string.Join("&", array);
+        }
+
+        //用于生成POST body
+        private static string getPOSTBody(NameValueCollection body)
+        {
+            var array = (from key in body.AllKeys
+                         from value in body.GetValues(key)
+                         select string.Format("{0}={1}", HttpUtility.UrlEncode(key),
+                         HttpUtility.UrlEncode(value)))
+                   .ToArray();
+            return string.Join("&", array);
         }
 
         public void require_auth()
@@ -53,11 +64,26 @@ namespace PixivCS
             if (access_token == null) throw new PixivException("Authentication required!");
         }
 
-        public void csfriendly_request_call(string method, string url,
+        public async Task<WebResponse> request_call(string method, string url,
             WebHeaderCollection headers = null, NameValueCollection query = null,
             NameValueCollection body = null)
         {
-            
+            string queryurl;
+            if (query == null) queryurl = url;
+            else queryurl = url + getQueryString(query);
+            var request = WebRequest.Create(queryurl);
+            request.Method = method;
+            if (headers != null) request.Headers = headers;
+            if (method.ToLower() == "post")
+            {
+                var bodyarray = Encoding.UTF8.GetBytes(getPOSTBody(body));
+                request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentLength = bodyarray.Length;
+                var stream = await request.GetRequestStreamAsync();
+                stream.Write(bodyarray, 0, bodyarray.Length);
+                stream.Close();
+            }
+            return await request.GetResponseAsync();
         }
     }
 }
