@@ -75,5 +75,27 @@ namespace PixivCS
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
+
+        //关注者的新作品
+        public async Task<JsonObject> IllustFollow(string Restrict = "public", string Offset = null,
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v2/illust/follow";
+            Dictionary<string, string> query = new Dictionary<string, string>();
+            query.Add("restrict", Restrict);
+            if (!string.IsNullOrEmpty(Offset)) query.Add("offset", Offset);
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //作品详情
+        public async Task<JsonObject> IllustDetail(string IllustID, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/illust/detail";
+            Dictionary<string, string> query = new Dictionary<string, string>();
+            query.Add("illust_id", IllustID);
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
     }
 }
