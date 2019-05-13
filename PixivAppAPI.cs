@@ -388,5 +388,34 @@ namespace PixivCS
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
+
+        //Ugoira信息
+        public async Task<JsonObject> UgoiraMetadata(string IllustID, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/ugoira/metadata";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("illust_id", IllustID)
+            };
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //特辑详情（伪装成Chrome）
+        public async Task<JsonObject> ShowcaseArticle(string ShowcaseID)
+        {
+            string url = "https://www.pixiv.net/ajax/showcase/article";
+            Dictionary<string, string> headers = new Dictionary<string, string>
+            {
+                { "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36" },
+                { "Referer", "https://www.pixiv.net" }
+            };
+            List<(string, string)> query = new List<(string, string)>()
+            {
+                ("article_id", ShowcaseID)
+            };
+            var res = await RequestCall("GET", url, headers, Query: query, RequireAuth: false);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
     }
 }
