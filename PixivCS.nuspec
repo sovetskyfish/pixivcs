@@ -7,7 +7,7 @@
     <authors>TobiichiAmane</authors>
     <owners>TobiichiAmane</owners>
     <license type="expression">GPL-2.0-only</license>
-    <projectUrl>https://github.com/tobiichiamane/pixivcs</projectUrl>
+    <repository type="git" url="https://github.com/tobiichiamane/pixivcs"/>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Pure C# replica of PixivFS, for those who want to use it in UWP.</description>
     <tags>Pixiv PixivAPI</tags>
