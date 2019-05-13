@@ -237,5 +237,17 @@ namespace PixivCS
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
+
+        //作品收藏详情
+        public async Task<JsonObject> IllustBookmarkDetail(string IllustID,bool RequireAuth=true)
+        {
+            string url = "https://app-api.pixiv.net/v2/illust/bookmark/detail";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("illust_id", IllustID)
+            };
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
     }
 }
