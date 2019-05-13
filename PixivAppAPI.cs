@@ -329,5 +329,49 @@ namespace PixivCS
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
+
+        //关注用户
+        public async Task<JsonObject> UserFollowAdd(string UserID, string Restrict = "public",
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/follow/add";
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "user_id", UserID },
+                { "restrict", Restrict }
+            };
+            var res = await RequestCall("POST", url, Body: new FormUrlEncodedContent(data),
+                RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //取关用户
+        public async Task<JsonObject> UserFollowDelete(string UserID, string Restrict = "public",
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/follow/delete";
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "user_id", UserID },
+                { "restrict", Restrict }
+            };
+            var res = await RequestCall("POST", url, Body: new FormUrlEncodedContent(data),
+                RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //好P友
+        public async Task<JsonObject> UserMyPixiv(string UserID, string Offset = null,
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/mypixiv";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("user_id", UserID)
+            };
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
     }
 }
