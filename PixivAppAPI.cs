@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Windows.Data.Json;
 
 namespace PixivCS
@@ -239,7 +240,7 @@ namespace PixivCS
         }
 
         //作品收藏详情
-        public async Task<JsonObject> IllustBookmarkDetail(string IllustID,bool RequireAuth=true)
+        public async Task<JsonObject> IllustBookmarkDetail(string IllustID, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v2/illust/bookmark/detail";
             List<(string, string)> query = new List<(string, string)>
@@ -247,6 +248,27 @@ namespace PixivCS
                 ("illust_id", IllustID)
             };
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //新增收藏
+        public async Task<JsonObject> IllustBookmarkAdd(string IllustID, string Restrict = "public",
+            List<string> Tags = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v2/illust/bookmark/add";
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "illust_id", IllustID },
+                { "restrict", Restrict }
+            };
+            string tags = "";
+            if (Tags != null)
+                foreach (var i in Tags)
+                    tags += (i + " ");
+            tags = tags.Trim();
+            if (tags != "")
+                data.Add("tags", HttpUtility.UrlEncode(tags));
+            var res = await RequestCall("GET", url, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
     }
