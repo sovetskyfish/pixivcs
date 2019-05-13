@@ -299,5 +299,20 @@ namespace PixivCS
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
+
+        //Following用户列表
+        public async Task<JsonObject> UserFollowing(string UserID, string Restrict = "public",
+            string Offset = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/following";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("user_id", UserID),
+                ("restrict", Restrict)
+            };
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
     }
 }
