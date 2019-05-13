@@ -59,5 +59,21 @@ namespace PixivCS
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
+
+        //用户收藏
+        public async Task<JsonObject> UserBookmarksIllust(string UserID, string Restrict = "public",
+            string Filter = "for_ios", string MaxBookmarkID = null, string Tag = null,
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/bookmarks/illust";
+            Dictionary<string, string> query = new Dictionary<string, string>();
+            query.Add("user_id", UserID);
+            query.Add("restrict", Restrict);
+            query.Add("filter", Filter);
+            if (!string.IsNullOrEmpty(MaxBookmarkID)) query.Add("max_bookmark_id", MaxBookmarkID);
+            if (!string.IsNullOrEmpty(Tag)) query.Add("tag", Tag);
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
     }
 }
