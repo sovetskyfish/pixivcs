@@ -77,9 +77,16 @@ namespace PixivCS
             }
         }
 
-        public async Task<string> GetResponseString(HttpResponseMessage Response)
+        //以字符串形式拿回Response
+        public static async Task<string> GetResponseString(HttpResponseMessage Response)
         {
             return await Response.Content.ReadAsStringAsync();
+        }
+
+        //以流形式拿回Response
+        public static async Task<Stream> GetResponseStream(HttpResponseMessage Response)
+        {
+            return await Response.Content.ReadAsStreamAsync();
         }
 
         public void SetAuth(string AccessToken, string RefreshToken = null)
