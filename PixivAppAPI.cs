@@ -268,7 +268,35 @@ namespace PixivCS
             tags = tags.Trim();
             if (tags != "")
                 data.Add("tags", HttpUtility.UrlEncode(tags));
-            var res = await RequestCall("GET", url, RequireAuth: RequireAuth);
+            var res = await RequestCall("POST", url, Body: new FormUrlEncodedContent(data),
+                RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //删除收藏
+        public async Task<JsonObject> IllustBookmarkDelete(string IllustID, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/illust/bookmark/delete";
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "illust_id", IllustID }
+            };
+            var res = await RequestCall("POST", url, Body: new FormUrlEncodedContent(data),
+                RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //用户收藏标签列表
+        public async Task<JsonObject> UserBookmarkTagsIllust(string Restrict = "public", string Offset = null,
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/bookmark-tags/illust";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("restrict", Restrict)
+            };
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
     }
