@@ -41,7 +41,7 @@ namespace PixivCS
         { }
 
         //用于生成带参数的url
-        private static string getQueryString(List<(string,string)> query)
+        private static string GetQueryString(List<(string, string)> query)
         {
             var array = (from i in query
                          select string.Format("{0}={1}", HttpUtility.UrlEncode(i.Item1),
@@ -64,7 +64,7 @@ namespace PixivCS
                 if (Headers != null)
                     foreach ((var k, var v) in Headers)
                         client.DefaultRequestHeaders.Add(k, v);
-                string queryUrl = Url + ((Query != null) ? getQueryString(Query) : "");
+                string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
                 switch (Method.ToLower())
                 {
                     case "get":
@@ -105,15 +105,19 @@ namespace PixivCS
         public async Task Auth(string Username, string Password)
         {
             string url = "https://oauth.secure.pixiv.net/auth/token";
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)");
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("get_secure_url", "1");
-            data.Add("client_id", clientID);
-            data.Add("client_secret", clientSecret);
-            data.Add("grant_type", "password");
-            data.Add("username", Username);
-            data.Add("password", Password);
+            Dictionary<string, string> headers = new Dictionary<string, string>
+            {
+                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" }
+            };
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "get_secure_url", "1" },
+                { "client_id", clientID },
+                { "client_secret", clientSecret },
+                { "grant_type", "password" },
+                { "username", Username },
+                { "password", Password }
+            };
             var res = await RequestCall("POST", url, headers, Body: new FormUrlEncodedContent(data));
             int status = (int)res.StatusCode;
             if (!(status == 200 || status == 301 || status == 302))
@@ -128,14 +132,18 @@ namespace PixivCS
         public async Task Auth(string RefreshToken)
         {
             string url = "https://oauth.secure.pixiv.net/auth/token";
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)");
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("get_secure_url", "1");
-            data.Add("client_id", clientID);
-            data.Add("client_secret", clientSecret);
-            data.Add("grant_type", "refresh_token");
-            data.Add("refresh_token", RefreshToken);
+            Dictionary<string, string> headers = new Dictionary<string, string>
+            {
+                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" }
+            };
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "get_secure_url", "1" },
+                { "client_id", clientID },
+                { "client_secret", clientSecret },
+                { "grant_type", "refresh_token" },
+                { "refresh_token", RefreshToken }
+            };
             var res = await RequestCall("POST", url, headers, Body: new FormUrlEncodedContent(data));
             int status = (int)res.StatusCode;
             if (!(status == 200 || status == 301 || status == 302))
