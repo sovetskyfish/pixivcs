@@ -46,6 +46,18 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
-
+        //用户作品
+        public async Task<JsonObject> UserIllusts(string UserID, string IllustType = "illust",
+            string Filter = "for_ios", string Offset = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/illusts";
+            Dictionary<string, string> query = new Dictionary<string, string>();
+            query.Add("user_id", UserID);
+            query.Add("filter", Filter);
+            if (!string.IsNullOrEmpty(IllustType)) query.Add("type", IllustType);
+            if (!string.IsNullOrEmpty(Offset)) query.Add("offset", Offset);
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
     }
 }
