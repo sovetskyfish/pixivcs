@@ -19,7 +19,7 @@ namespace PixivCS
         public PixivAppAPI(PixivBaseAPI BaseAPI) : base(BaseAPI) { }
 
         public async Task<HttpResponseMessage> RequestCall(string Method, string Url,
-            Dictionary<string, string> Headers = null, Dictionary<string, string> Query = null,
+            Dictionary<string, string> Headers = null, List<(string, string)> Query = null,
             HttpContent Body = null, bool RequireAuth = true)
         {
             var headers = (Headers == null) ? new Dictionary<string, string>() : Headers;
@@ -39,9 +39,9 @@ namespace PixivCS
             bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/user/detail";
-            Dictionary<string, string> query = new Dictionary<string, string>();
-            query.Add("user_id", UserID);
-            query.Add("filter", Filter);
+            List<(string, string)> query = new List<(string, string)>();
+            query.Add(("user_id", UserID));
+            query.Add(("filter", Filter));
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
@@ -51,11 +51,11 @@ namespace PixivCS
             string Filter = "for_ios", string Offset = null, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/user/illusts";
-            Dictionary<string, string> query = new Dictionary<string, string>();
-            query.Add("user_id", UserID);
-            query.Add("filter", Filter);
-            if (!string.IsNullOrEmpty(IllustType)) query.Add("type", IllustType);
-            if (!string.IsNullOrEmpty(Offset)) query.Add("offset", Offset);
+            List<(string, string)> query = new List<(string, string)>();
+            query.Add(("user_id", UserID));
+            query.Add(("filter", Filter));
+            if (!string.IsNullOrEmpty(IllustType)) query.Add(("type", IllustType));
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
@@ -66,12 +66,12 @@ namespace PixivCS
             bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/user/bookmarks/illust";
-            Dictionary<string, string> query = new Dictionary<string, string>();
-            query.Add("user_id", UserID);
-            query.Add("restrict", Restrict);
-            query.Add("filter", Filter);
-            if (!string.IsNullOrEmpty(MaxBookmarkID)) query.Add("max_bookmark_id", MaxBookmarkID);
-            if (!string.IsNullOrEmpty(Tag)) query.Add("tag", Tag);
+            List<(string, string)> query = new List<(string, string)>();
+            query.Add(("user_id", UserID));
+            query.Add(("restrict", Restrict));
+            query.Add(("filter", Filter));
+            if (!string.IsNullOrEmpty(MaxBookmarkID)) query.Add(("max_bookmark_id", MaxBookmarkID));
+            if (!string.IsNullOrEmpty(Tag)) query.Add(("tag", Tag));
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
@@ -81,9 +81,9 @@ namespace PixivCS
             bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v2/illust/follow";
-            Dictionary<string, string> query = new Dictionary<string, string>();
-            query.Add("restrict", Restrict);
-            if (!string.IsNullOrEmpty(Offset)) query.Add("offset", Offset);
+            List<(string, string)> query = new List<(string, string)>();
+            query.Add(("restrict", Restrict));
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }
@@ -92,8 +92,39 @@ namespace PixivCS
         public async Task<JsonObject> IllustDetail(string IllustID, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/illust/detail";
-            Dictionary<string, string> query = new Dictionary<string, string>();
-            query.Add("illust_id", IllustID);
+            List<(string, string)> query = new List<(string, string)>();
+            query.Add(("illust_id", IllustID));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //作品评论
+        //IncludeTotalComments决定是否在返回的JSON中包含总评论数
+        public async Task<JsonObject> IllustComments(string IllustID, string Offset = null,
+            bool? IncludeTotalComments = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/illust/comments";
+            List<(string, string)> query = new List<(string, string)>();
+            query.Add(("illust_id", IllustID));
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            if (IncludeTotalComments != null) query.Add(("include_total_comments",
+                IncludeTotalComments.Value ? "true" : "false"));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        public async Task<JsonObject> IllustRelated(string IllustID, string Filter = "for_ios",
+            List<string> SeedIllustIDs = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v2/illust/related";
+            List<(string, string)> query = new List<(string, string)>();
+            query.Add(("illust_id", IllustID));
+            query.Add(("filter", Filter));
+            if (SeedIllustIDs != null)
+            {
+                foreach (var i in SeedIllustIDs)
+                    query.Add(("seed_illust_ids[]", i));
+            }
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
         }

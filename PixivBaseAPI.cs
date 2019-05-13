@@ -41,11 +41,11 @@ namespace PixivCS
         { }
 
         //用于生成带参数的url
-        private static string getQueryString(Dictionary<string, string> query)
+        private static string getQueryString(List<(string,string)> query)
         {
-            var array = (from key in query.Keys
-                         select string.Format("{0}={1}", HttpUtility.UrlEncode(key),
-                         HttpUtility.UrlEncode(query[key])))
+            var array = (from i in query
+                         select string.Format("{0}={1}", HttpUtility.UrlEncode(i.Item1),
+                         HttpUtility.UrlEncode(i.Item2)))
                 .ToArray();
             return "?" + string.Join("&", array);
         }
@@ -56,7 +56,7 @@ namespace PixivCS
         }
 
         public async Task<HttpResponseMessage> RequestCall(string Method, string Url,
-            Dictionary<string, string> Headers = null, Dictionary<string, string> Query = null,
+            Dictionary<string, string> Headers = null, List<(string, string)> Query = null,
             HttpContent Body = null)
         {
             using (HttpClient client = new HttpClient())
