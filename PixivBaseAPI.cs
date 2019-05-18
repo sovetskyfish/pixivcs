@@ -102,7 +102,7 @@ namespace PixivCS
         }
 
         //用户名和密码登录
-        public async Task Auth(string Username, string Password)
+        public async Task<JsonObject> Auth(string Username, string Password)
         {
             string url = "https://oauth.secure.pixiv.net/auth/token";
             Dictionary<string, string> headers = new Dictionary<string, string>
@@ -126,10 +126,11 @@ namespace PixivCS
             AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
             UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
             RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
+            return resJSON;
         }
 
         //RefreshToken登录
-        public async Task Auth(string RefreshToken)
+        public async Task<JsonObject> Auth(string RefreshToken)
         {
             string url = "https://oauth.secure.pixiv.net/auth/token";
             Dictionary<string, string> headers = new Dictionary<string, string>
@@ -152,6 +153,7 @@ namespace PixivCS
             AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
             UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
             this.RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
+            return resJSON;
         }
     }
 }
