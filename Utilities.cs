@@ -78,7 +78,6 @@ namespace PixivCS
                 default:
                     throw new PixivException("Unsupported method");
             }
-            var peek = builder.ToString();
             return Encoding.UTF8.GetBytes(builder.ToString());
         }
 
