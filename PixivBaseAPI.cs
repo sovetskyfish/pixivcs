@@ -90,6 +90,7 @@ namespace PixivCS
             string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
             if (ExperimentalConnection)
             {
+                #region 无  底  深  坑
                 var targetIP = TargetIPs[new Uri(queryUrl).Host];
                 var targetSubject = TargetSubjects[targetIP];
                 var targetSN = TargetSNs[targetIP];
@@ -105,11 +106,28 @@ namespace PixivCS
                         await connection.CopyToAsync(memory);
                         memory.Position = 0;
                         var data = memory.ToArray();
-                        var index = Utilities.BinaryMatch(data, Encoding.ASCII.GetBytes("\r\n\r\n")) + 4;
-                        var headers = Encoding.ASCII.GetString(data, 0, index);
+                        var index = Utilities.BinaryMatch(data, Encoding.UTF8.GetBytes("\r\n\r\n")) + 4;
+                        var headers = Encoding.UTF8.GetString(data, 0, index);
                         memory.Position = index;
                         byte[] result;
-                        if (headers.IndexOf("Content-Encoding: gzip") > 0)
+                        HttpStatusCode statusCode;
+                        Dictionary<string, string> headersDictionary = new Dictionary<string, string>();
+                        foreach (var header in headers.Split("\r\n"))
+                        {
+                            if (string.IsNullOrWhiteSpace(header)) break;
+                            if (!header.Contains(": "))
+                            {
+                                var status = header.Split(" ");
+                                statusCode = (HttpStatusCode)Convert.ToInt32(status[1]);
+                            }
+                            else
+                            {
+                                var pair = header.Split(": ");
+                                headersDictionary.Add(pair[0], pair[1]);
+                            }
+                        }
+                        if (headersDictionary.ContainsKey("Content-Encoding") &&
+                            headersDictionary["Content-Encoding"].Contains("gzip"))
                         {
                             using (GZipStream decompressionStream = new GZipStream(memory, CompressionMode.Decompress))
                             using (var decompressedMemory = new MemoryStream())
@@ -127,28 +145,63 @@ namespace PixivCS
                                 result = resultMemory.ToArray();
                             }
                         }
+                        if (headersDictionary.ContainsKey("Transfer-Encoding") &&
+                            headersDictionary["Transfer-Encoding"].Contains("chunked"))
+                        {
+                            //处理分块传输
+                            using (MemoryStream parsedChunckedResult = new MemoryStream())
+                            {
+                                parsedChunckedResult.Position = 0;
+                                int position = 0;
+                                bool lengthOrContent = false;
+                                int chunkLength = 0;
+                                List<byte> lengthList = new List<byte>();
+                                while (position < result.Length)
+                                {
+                                    if (!lengthOrContent)
+                                    {
+                                        //分块长度信息
+                                        if (result[position] == '\r')
+                                        {
+                                            position += 2;
+                                            lengthOrContent = true;
+                                            var lengthArray = lengthList.ToArray();
+                                            chunkLength = Convert.ToInt32(Encoding.UTF8.GetString(lengthArray), 16);
+                                            lengthList.Clear();
+                                        }
+                                        else
+                                        {
+                                            lengthList.Add(result[position]);
+                                            position++;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //末端
+                                        if (chunkLength == 0) break;
+                                        //分块内容
+                                        await parsedChunckedResult.WriteAsync(result, position, chunkLength);
+                                        position += chunkLength + 2;
+                                        lengthOrContent = false;
+                                    }
+                                }
+                                result = parsedChunckedResult.ToArray();
+                            }
+                        }
                         var res = new HttpResponseMessage();
                         res.Content = new ByteArrayContent(result);
-                        foreach (var header in headers.Split("\r\n"))
+                        foreach (var pair in headersDictionary)
                         {
-                            if (string.IsNullOrWhiteSpace(header)) break;
-                            if (!header.Contains(": "))
-                            {
-                                var status = header.Split(" ");
-                                res.StatusCode = (HttpStatusCode)Convert.ToInt32(status[1]);
-                            }
-                            else
-                            {
-                                var pair = header.Split(": ");
-                                var added = res.Headers.TryAddWithoutValidation(pair[0], pair[1]);
-                                if (!added) res.Content.Headers.Add(pair[0], pair[1]);
-                            }
+                            var added = res.Headers.TryAddWithoutValidation(pair.Key, pair.Value);
+                            if (!added) res.Content.Headers.Add(pair.Key, pair.Value);
                         }
                         return res;
                     }
                 }
+                #endregion
             }
             else
+                //传统手段
                 using (HttpClient client = new HttpClient())
                 {
                     if (Headers != null)
