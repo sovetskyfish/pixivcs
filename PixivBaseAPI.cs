@@ -46,7 +46,7 @@ namespace PixivCS
         public PixivBaseAPI() : this(null, null, null) { }
 
         public PixivBaseAPI(PixivBaseAPI BaseAPI) :
-            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID)
+            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection)
         { }
 
         //用于生成带参数的url
