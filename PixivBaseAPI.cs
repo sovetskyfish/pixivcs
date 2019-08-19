@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -23,15 +24,23 @@ namespace PixivCS
         internal string clientID = "MOBrBDS8blbauoSck0ZfDbtuzpyT";
         internal string clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
 
+        public string TargetIP { get; set; } = "210.140.131.224";
+        public string TargetSubject { get; set; } = "CN=*.pixiv.net, O=pixiv Inc., OU=Development department, L=Shibuya-ku, S=Tokyo, C=JP";
+        public string TargetSN { get; set; } = "281941D074A6D4B07B72D729";
+        public string TargetTP { get; set; } = "352FCC13B920E12CD15F3875E52AEDB95B62972B";
+
         public string AccessToken { get; internal set; }
         public string RefreshToken { get; internal set; }
         public string UserID { get; internal set; }
+        public bool ExperimentalConnection { get; set; }
 
-        public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID)
+        public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
+            bool ExperimentalConnection = false)
         {
             this.AccessToken = AccessToken;
             this.RefreshToken = RefreshToken;
             this.UserID = UserID;
+            this.ExperimentalConnection = ExperimentalConnection;
         }
 
         public PixivBaseAPI() : this(null, null, null) { }
@@ -59,22 +68,79 @@ namespace PixivCS
             Dictionary<string, string> Headers = null, List<(string, string)> Query = null,
             HttpContent Body = null)
         {
-            using (HttpClient client = new HttpClient())
+            string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
+            if (ExperimentalConnection)
             {
-                if (Headers != null)
-                    foreach ((var k, var v) in Headers)
-                        client.DefaultRequestHeaders.Add(k, v);
-                string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
-                switch (Method.ToLower())
+                using (var connection = await Task.Run(() => Utilities.CreateConnection(TargetIP, (cert) =>
+                      cert.Subject == TargetSubject && cert.SerialNumber == TargetSN && cert.Thumbprint == TargetTP
+                    )))
                 {
-                    case "get":
-                        return await client.GetAsync(queryUrl);
-                    case "post":
-                        return await client.PostAsync(queryUrl, Body);
-                    default:
-                        throw new PixivException("Unsupported method");
+                    var httpRequest = await Utilities.ConstructHTTPAsync(Method, queryUrl, Headers, Body);
+                    await connection.WriteAsync(httpRequest, 0, httpRequest.Length);
+                    using (var memory = new MemoryStream())
+                    {
+                        await connection.CopyToAsync(memory);
+                        memory.Position = 0;
+                        var data = memory.ToArray();
+                        var index = Utilities.BinaryMatch(data, Encoding.ASCII.GetBytes("\r\n\r\n")) + 4;
+                        var headers = Encoding.ASCII.GetString(data, 0, index);
+                        memory.Position = index;
+                        byte[] result;
+                        if (headers.IndexOf("Content-Encoding: gzip") > 0)
+                        {
+                            using (GZipStream decompressionStream = new GZipStream(memory, CompressionMode.Decompress))
+                            using (var decompressedMemory = new MemoryStream())
+                            {
+                                await decompressionStream.CopyToAsync(decompressedMemory);
+                                decompressedMemory.Position = 0;
+                                result = decompressedMemory.ToArray();
+                            }
+                        }
+                        else
+                        {
+                            using (var resultMemory = new MemoryStream())
+                            {
+                                await memory.CopyToAsync(resultMemory);
+                                result = resultMemory.ToArray();
+                            }
+                        }
+                        var res = new HttpResponseMessage();
+                        res.Content = new ByteArrayContent(result);
+                        foreach (var header in headers.Split("\r\n"))
+                        {
+                            if (string.IsNullOrWhiteSpace(header)) break;
+                            if (!header.Contains(": "))
+                            {
+                                var status = header.Split(" ");
+                                res.StatusCode = (HttpStatusCode)Convert.ToInt32(status[1]);
+                            }
+                            else
+                            {
+                                var pair = header.Split(": ");
+                                var added = res.Headers.TryAddWithoutValidation(pair[0], pair[1]);
+                                if (!added) res.Content.Headers.Add(pair[0], pair[1]);
+                            }
+                        }
+                        return res;
+                    }
                 }
             }
+            else
+                using (HttpClient client = new HttpClient())
+                {
+                    if (Headers != null)
+                        foreach ((var k, var v) in Headers)
+                            client.DefaultRequestHeaders.Add(k, v);
+                    switch (Method.ToLower())
+                    {
+                        case "get":
+                            return await client.GetAsync(queryUrl);
+                        case "post":
+                            return await client.PostAsync(queryUrl, Body);
+                        default:
+                            throw new PixivException("Unsupported method");
+                    }
+                }
         }
 
         //以字符串形式拿回Response
