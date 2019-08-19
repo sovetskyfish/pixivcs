@@ -24,10 +24,29 @@ namespace PixivCS
         internal string clientID = "MOBrBDS8blbauoSck0ZfDbtuzpyT";
         internal string clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
 
-        public string TargetIP { get; set; } = "210.140.131.224";
-        public string TargetSubject { get; set; } = "CN=*.pixiv.net, O=pixiv Inc., OU=Development department, L=Shibuya-ku, S=Tokyo, C=JP";
-        public string TargetSN { get; set; } = "281941D074A6D4B07B72D729";
-        public string TargetTP { get; set; } = "352FCC13B920E12CD15F3875E52AEDB95B62972B";
+        public Dictionary<string, string> TargetIPs { get; set; } = new Dictionary<string, string>()
+        {
+            {"oauth.secure.pixiv.net","210.140.131.224" },
+            {"i.pximg.net","210.140.92.142" },
+            {"www.pixiv.net","210.140.131.224" },
+            {"app-api.pixiv.net","210.140.131.224" }
+        };
+
+        public Dictionary<string, string> TargetSubjects { get; set; } = new Dictionary<string, string>()
+        {
+            {"210.140.131.224","CN=*.pixiv.net, O=pixiv Inc., OU=Development department, L=Shibuya-ku, S=Tokyo, C=JP" },
+            {"210.140.92.142","CN=*.pximg.net, OU=Domain Control Validated" }
+        };
+        public Dictionary<string, string> TargetSNs { get; set; } = new Dictionary<string, string>()
+        {
+            {"210.140.131.224","281941D074A6D4B07B72D729" },
+            {"210.140.92.142","2387DB20E84EFCF82492545C" }
+        };
+        public Dictionary<string, string> TargetTPs { get; set; } = new Dictionary<string, string>()
+        {
+            {"210.140.131.224","352FCC13B920E12CD15F3875E52AEDB95B62972B" },
+            {"210.140.92.142","F4A431620F42E4D10EB42621C6948E3CD5014FB0" }
+        };
 
         public string AccessToken { get; internal set; }
         public string RefreshToken { get; internal set; }
@@ -71,8 +90,12 @@ namespace PixivCS
             string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
             if (ExperimentalConnection)
             {
-                using (var connection = await Task.Run(() => Utilities.CreateConnection(TargetIP, (cert) =>
-                      cert.Subject == TargetSubject && cert.SerialNumber == TargetSN && cert.Thumbprint == TargetTP
+                var targetIP = TargetIPs[new Uri(queryUrl).Host];
+                var targetSubject = TargetSubjects[targetIP];
+                var targetSN = TargetSNs[targetIP];
+                var targetTP = TargetTPs[targetIP];
+                using (var connection = await Task.Run(() => Utilities.CreateConnection(targetIP, (cert) =>
+                      cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP
                     )))
                 {
                     var httpRequest = await Utilities.ConstructHTTPAsync(Method, queryUrl, Headers, Body);
