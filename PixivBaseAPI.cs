@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Security.Cryptography;
 using Windows.Data.Json;
 
 namespace PixivCS
@@ -23,6 +24,7 @@ namespace PixivCS
     {
         internal string clientID = "MOBrBDS8blbauoSck0ZfDbtuzpyT";
         internal string clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
+        internal string hashSecret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c";
 
         public Dictionary<string, string> TargetIPs { get; set; } = new Dictionary<string, string>()
         {
@@ -237,19 +239,36 @@ namespace PixivCS
             this.RefreshToken = RefreshToken;
         }
 
-        public void SetClient(string ClientID, string ClientSecret)
+        public void SetClient(string ClientID, string ClientSecret, string HashSecret)
         {
             clientID = ClientID;
             clientSecret = ClientSecret;
+            hashSecret = HashSecret;
         }
 
         //用户名和密码登录
         public async Task<JsonObject> Auth(string Username, string Password)
         {
+            string MD5Hash(string Input)
+            {
+                if (string.IsNullOrEmpty(Input)) return null;
+                using (var md5 = MD5.Create())
+                {
+                    var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(Input.Trim()));
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < bytes.Length; i++)
+                        builder.Append(bytes[i].ToString("x2"));
+                    return builder.ToString();
+                }
+            }
             string url = "https://oauth.secure.pixiv.net/auth/token";
+            string time = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+
             Dictionary<string, string> headers = new Dictionary<string, string>
             {
-                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" }
+                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" },
+                { "X-Client-Time", time },
+                { "X-Client-Hash", MD5Hash(time+hashSecret) }
             };
             Dictionary<string, string> data = new Dictionary<string, string>
             {
