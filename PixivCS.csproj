@@ -123,6 +123,12 @@
     <Compile Include="PixivAppAPI.cs" />
     <Compile Include="PixivBaseAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SauceNao\Imgur.cs" />
+    <Compile Include="SauceNao\Pixiv.cs" />
+    <Compile Include="SauceNao\Response.cs" />
+    <Compile Include="SauceNao\Result.cs" />
+    <Compile Include="SauceNao\Sauce.cs" />
+    <Compile Include="SauceNao\SauceNao.cs" />
     <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="Properties\PixivCS.rd.xml" />
   </ItemGroup>
