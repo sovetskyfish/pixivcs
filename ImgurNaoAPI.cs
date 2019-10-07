@@ -36,7 +36,6 @@ namespace PixivCS
             var values = new NameValueCollection {
                 { "image", Convert.ToBase64String(Image) }
             };
-            System.Diagnostics.Debug.WriteLine(JsonObject.Parse(Encoding.UTF8.GetString(WebClient.UploadValues("https://api.imgur.com/3/upload", values))).GetNamedObject("data").ToString());
             return JsonObject.Parse(Encoding.UTF8.GetString(WebClient.UploadValues("https://api.imgur.com/3/upload", values))).GetNamedObject("data");
         }
         /// <summary>
