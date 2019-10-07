@@ -1,0 +1,41 @@
+DownLoad函数返回
+{
+    "ext_urls": [
+        "P站链接"
+    ],
+    "title": "图像标题",
+    "pixiv_id": P ID(数字)
+    "member_name": "作者名",
+    "member_id": 作者ID(数字)
+}
+UpLoad函数返回
+{
+    "id": "UFXVN6s",
+    "title": null,
+    "description": null,
+    "datetime": 1570458561,
+    "type": "image/jpeg",
+    "animated": false,
+    "width": 800,
+    "height": 1022,
+    "size": 530332,
+    "views": 0,
+    "bandwidth": 0,
+    "vote": null,
+    "favorite": false,
+    "nsfw": null,
+    "section": null,
+    "account_url": null,
+    "account_id": 0,
+    "is_ad": false,
+    "in_most_viral": false,
+    "has_sound": false,
+    "tags": [],
+    "ad_type": 0,
+    "ad_url": "",
+    "edited": "0",
+    "in_gallery": false,
+    "deletehash": "cizJz0AAKoH4dUJ",
+    "name": "",
+    "link": "最终需要的链接"
+}
