@@ -1,16 +1,17 @@
-﻿using PixivFSUWP.SauceNao.Sauces;
+﻿using PixivCS.SauceNao.Sauces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 
 namespace PixivCS.SauceNao {
   class Response {
     private dynamic data;
     private Type    provider;
 
-    public Response(dynamic data) {
+    public Response(JsonObject data) {
       this.data     = data;
       this.provider = guessTheProvider();
     }

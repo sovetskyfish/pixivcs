@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 
 namespace PixivCS.SauceNao {
-  class Result {
+  public class Result {
     public float Similarity;
     public Sauce Response;
 
-    public Result(dynamic header, dynamic data) {
-      this.Similarity = (float) header.similarity;
+    public Result(JsonObject header, JsonObject data) {
+      this.Similarity = (float)Convert.ToDouble(header.GetNamedString("similarity"));
       this.Response   = new Response(data).GetResponse();
     }
 

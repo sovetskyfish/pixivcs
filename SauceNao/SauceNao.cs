@@ -4,10 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Windows.Data.Json;
 
 namespace PixivCS.SauceNao {
-  class SauceNao {
+  public class SauceNao {
     private static string ENDPOINT = "https://saucenao.com/search.php";
     private        string ApiKey;
 
@@ -33,11 +33,12 @@ namespace PixivCS.SauceNao {
 
       try {
         string  response = webClient.DownloadString(ENDPOINT);
-        dynamic dynObj   = JsonConvert.DeserializeObject(response);
-        foreach(var result in dynObj.results) {
-          results.Add(new Result(result.header, result.data));
+        System.Diagnostics.Debug.WriteLine(response);
+        JsonObject dynObj = JsonObject.Parse(response);
+        foreach (var result in dynObj.GetNamedArray("results")) {
+          results.Add(new Result(result.GetObject().GetNamedObject("header"), result.GetObject().GetNamedObject("data")));
         }
-      }
+            }
       catch (Exception e) {
         Console.WriteLine(e.Message);
       }

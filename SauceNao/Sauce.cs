@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PixivCS.SauceNao {
-  class Sauce {
+  public class Sauce {
     public string Title, AuthorName;
     public int     SauceId, AuthorId;
     public string Url {

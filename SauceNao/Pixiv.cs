@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 
 namespace PixivCS.SauceNao.Sauces {
   class Pixiv : Sauce {
@@ -11,7 +12,7 @@ namespace PixivCS.SauceNao.Sauces {
       get { return GetUrl(); }
     }
 
-    public Pixiv(dynamic data) : base((string) data.title, (int) data.pixiv_id, (string) data.member_name, (int) data.member_id) {}
+    public Pixiv(JsonObject data) : base(data.GetNamedString("title"), (int) data.GetNamedNumber("pixiv_id"), data.GetNamedString("member_name"), (int) data.GetNamedNumber("member_id")) {}
 
     public override string ToString() {
       return String.Format("Title: {0}\nPixiv ID: {1}\nAuthor: {2} (#{3})\nURL: {4}", Title, SauceId, AuthorName, AuthorId, Url);
@@ -21,8 +22,13 @@ namespace PixivCS.SauceNao.Sauces {
       return ENDPOINT + SauceId;
     }
 
-    public new static bool IsTheRightAdapterFor(dynamic data) {
-      return data.pixiv_id != null;
+    public static bool IsTheRightAdapterFor(JsonObject data) {
+      try{
+        data.GetNamedNumber("pixiv_id");
+        return true;
+      }catch{
+        return false;
+      }
     }
   }
 }
