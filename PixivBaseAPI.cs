@@ -263,7 +263,7 @@ namespace PixivCS
                 }
             }
             string url = "https://oauth.secure.pixiv.net/auth/token";
-            string time = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+            string time = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:sszzz");
 
             Dictionary<string, string> headers = new Dictionary<string, string>
             {
