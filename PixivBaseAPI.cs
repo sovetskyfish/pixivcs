@@ -91,7 +91,7 @@ namespace PixivCS
             HttpContent Body = null)
         {
             string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
-            if (ExperimentalConnection)
+            if (ExperimentalConnection && TargetIPs.ContainsKey(new Uri(queryUrl).Host))
             {
                 #region 无  底  深  坑
                 var targetIP = TargetIPs[new Uri(queryUrl).Host];
