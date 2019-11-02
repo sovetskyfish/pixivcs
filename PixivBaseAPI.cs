@@ -29,8 +29,6 @@ namespace PixivCS
         public Dictionary<string, string> TargetIPs { get; set; } = new Dictionary<string, string>()
         {
             {"oauth.secure.pixiv.net","210.140.131.224" },
-            {"i.pximg.net","210.140.92.142" },
-            {"s.pximg.net","210.140.92.142" },
             {"www.pixiv.net","210.140.131.224" },
             {"app-api.pixiv.net","210.140.131.224" }
         };
