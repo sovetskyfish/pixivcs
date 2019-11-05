@@ -29,8 +29,6 @@ namespace PixivCS
         public Dictionary<string, string> TargetIPs { get; set; } = new Dictionary<string, string>()
         {
             {"oauth.secure.pixiv.net","210.140.131.224" },
-            {"i.pximg.net","210.140.92.142" },
-            {"s.pximg.net","210.140.92.142" },
             {"www.pixiv.net","210.140.131.224" },
             {"app-api.pixiv.net","210.140.131.224" }
         };
@@ -91,7 +89,7 @@ namespace PixivCS
             HttpContent Body = null)
         {
             string queryUrl = Url + ((Query != null) ? GetQueryString(Query) : "");
-            if (ExperimentalConnection)
+            if (ExperimentalConnection && TargetIPs.ContainsKey(new Uri(queryUrl).Host))
             {
                 #region 无  底  深  坑
                 var targetIP = TargetIPs[new Uri(queryUrl).Host];
@@ -263,7 +261,7 @@ namespace PixivCS
                 }
             }
             string url = "https://oauth.secure.pixiv.net/auth/token";
-            string time = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+            string time = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:sszzz");
 
             Dictionary<string, string> headers = new Dictionary<string, string>
             {

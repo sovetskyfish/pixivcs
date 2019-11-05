@@ -13,6 +13,7 @@ namespace PixivCS
     {
         private string SauceNAO_API;
         private string Imgur_API;
+
         /// <summary>
         /// 构造方法
         /// </summary>
@@ -23,6 +24,7 @@ namespace PixivCS
             SauceNAO_API = SauceNAOApiKey;
             Imgur_API = ImgurApiKey;
         }
+
         /// <summary>
         /// 上传图像
         /// </summary>
@@ -33,11 +35,13 @@ namespace PixivCS
             WebClient WebClient;
             WebClient = new WebClient();
             WebClient.Headers.Add("Authorization: Client-ID " + Imgur_API);
-            var values = new NameValueCollection {
+            var values = new NameValueCollection
+            {
                 { "image", Convert.ToBase64String(Image) }
             };
             return JsonObject.Parse(Encoding.UTF8.GetString(WebClient.UploadValues("https://api.imgur.com/3/upload", values))).GetNamedObject("data");
         }
+
         /// <summary>
         /// 下载Json对象
         /// </summary>
