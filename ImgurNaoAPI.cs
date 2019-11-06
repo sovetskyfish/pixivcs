@@ -46,7 +46,7 @@ namespace PixivCS
         /// </summary>
         /// <param name="Image">图像字节数组</param>
         /// <returns>包含图像链接的Json对象</returns>
-        public async Task<JsonObject> UpLoad(byte[] Image)
+        public async Task<JsonObject> UpLoadAsync(byte[] Image)
         {
             WebClient WebClient;
             WebClient = new WebClient();
@@ -80,7 +80,7 @@ namespace PixivCS
         /// </summary>
         /// <param name="url">图像链接</param>
         /// <returns>经过处理的包含Pixiv ID , title , member_name , member_id , ext_urls 的Json对象</returns>
-        public JsonObject DownLoad(string url)
+        public async Task<JsonObject> DownLoadAsync(string url)
         {
             WebClient WebClient = new WebClient();
             WebClient.QueryString.Add("db", "999");
