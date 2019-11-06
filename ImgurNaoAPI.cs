@@ -71,17 +71,9 @@ namespace PixivCS
             WebClient.QueryString.Add("numres", "16");
             WebClient.QueryString.Add("api_key", SauceNAO_API);
             WebClient.QueryString.Add("url", url);
-            try
-            {
-                string response = WebClient.DownloadString("https://saucenao.com/search.php");
-                JsonObject dynObj = JsonObject.Parse(response);
-                return dynObj.GetNamedArray("results")[0].GetObject().GetNamedObject("data");
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message);
-            }
-            return null;
+            string response = WebClient.DownloadString("https://saucenao.com/search.php");
+            JsonObject dynObj = JsonObject.Parse(response);
+            return dynObj.GetNamedArray("results")[0].GetObject().GetNamedObject("data");
         }
         /// <summary>
         /// 下载Json对象(异步)
