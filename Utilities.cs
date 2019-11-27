@@ -13,19 +13,19 @@ namespace PixivCS
     internal static class Utilities
     {
         //不携带SNI的连接
-        public static SslStream CreateConnection(string TargetIP, Func<X509Certificate2, bool> CertValidation)
+        public static async Task<SslStream> CreateConnectionAsync(string TargetIP, Func<X509Certificate2, bool> CertValidation)
         {
+            TcpClient client = new TcpClient(TargetIP, 443);
+            var networkStream = client.GetStream();
+            var sslStream = new SslStream(networkStream, false, (sender, certificate, chain, errors) => CertValidation((X509Certificate2)certificate));
             try
             {
-                TcpClient client = new TcpClient(TargetIP, 443);
-                var networkStream = client.GetStream();
-                SslStream ssl = new SslStream(networkStream, false, (sender, certificate, chain, errors) =>
-                    CertValidation((X509Certificate2)certificate));
-                ssl.AuthenticateAsClient("");
-                return ssl;
+                await sslStream.AuthenticateAsClientAsync("");
+                return sslStream;
             }
             catch (Exception e)
             {
+                sslStream.Dispose();
                 throw new PixivException(e.Message);
             }
         }

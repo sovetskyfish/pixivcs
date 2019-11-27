@@ -22,6 +22,12 @@ namespace PixivCS
 
     public class PixivBaseAPI
     {
+
+        // 参考自下面的链接
+        // https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client#create-and-initialize-httpclient
+        // https://stackoverflow.com/questions/15705092/do-httpclient-and-httpclienthandler-have-to-be-disposed
+        private static readonly HttpClient _client = new HttpClient();
+
         internal string clientID = "MOBrBDS8blbauoSck0ZfDbtuzpyT";
         internal string clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
         internal string hashSecret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c";
@@ -96,9 +102,8 @@ namespace PixivCS
                 var targetSubject = TargetSubjects[targetIP];
                 var targetSN = TargetSNs[targetIP];
                 var targetTP = TargetTPs[targetIP];
-                using (var connection = await Task.Run(() => Utilities.CreateConnection(targetIP, (cert) =>
-                      cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP
-                    )))
+                using (var connection = await Utilities.CreateConnectionAsync(targetIP, (cert) =>
+                    cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP))
                 {
                     var httpRequest = await Utilities.ConstructHTTPAsync(Method, queryUrl, Headers, Body);
                     await connection.WriteAsync(httpRequest, 0, httpRequest.Length);
@@ -201,23 +206,22 @@ namespace PixivCS
                 }
                 #endregion
             }
-            else
-                //传统手段
-                using (HttpClient client = new HttpClient())
-                {
-                    if (Headers != null)
-                        foreach ((var k, var v) in Headers)
-                            client.DefaultRequestHeaders.Add(k, v);
-                    switch (Method.ToLower())
-                    {
-                        case "get":
-                            return await client.GetAsync(queryUrl);
-                        case "post":
-                            return await client.PostAsync(queryUrl, Body);
-                        default:
-                            throw new PixivException("Unsupported method");
-                    }
-                }
+            else //传统手段
+            {
+                var allowMethods = new string[] { "get", "post" };
+                if (!allowMethods.Any(m => m.Equals(Method, StringComparison.OrdinalIgnoreCase)))
+                    throw new PixivException("Unsupported method");
+
+                var request = new HttpRequestMessage(new HttpMethod(Method), queryUrl);
+                if (Headers != null)
+                    foreach (var (k, v) in Headers)
+                        request.Headers.Add(k, v);
+
+                if (Body != null)
+                    request.Content = Body;
+
+                return await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+            }
         }
 
         //以字符串形式拿回Response
