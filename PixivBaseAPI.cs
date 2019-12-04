@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Security.Cryptography;
 using Windows.Data.Json;
+using Windows.UI.Xaml;
 
 namespace PixivCS
 {
@@ -18,6 +19,12 @@ namespace PixivCS
     {
         public PixivException() { }
         public PixivException(string msg) : base(msg) { }
+    }
+
+    public class RefreshEventArgs : EventArgs
+    {
+        public string NreAccessToken { get; set; }
+        public string NewRefreshToken { get; set; }
     }
 
     public class PixivBaseAPI
@@ -60,19 +67,45 @@ namespace PixivCS
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
 
+        private int refreshInterval;
+        public int RefreshInterval
+        {
+            get => refreshInterval;
+            set
+            {
+                refreshInterval = value;
+                refreshTimer.Interval = TimeSpan.FromMinutes(value);
+            }
+        }
+
+        public bool? LastRefresh { get; private set; }
+
+        DispatcherTimer refreshTimer = new DispatcherTimer();
+
+        //自动刷新登录时执行
+        public event EventHandler<RefreshEventArgs> TokenRefreshed;
+
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
-            bool ExperimentalConnection = false)
+            bool ExperimentalConnection = false, int RefreshInterval = 45)
         {
             this.AccessToken = AccessToken;
             this.RefreshToken = RefreshToken;
             this.UserID = UserID;
             this.ExperimentalConnection = ExperimentalConnection;
+            this.RefreshInterval = RefreshInterval;
+            refreshTimer.Interval = TimeSpan.FromMinutes(RefreshInterval);
+            refreshTimer.Tick += RefreshTimer_Tick;
+        }
+
+        private void RefreshTimer_Tick(object sender, object e)
+        {
+            //每隔一定的时间刷新登录
         }
 
         public PixivBaseAPI() : this(null, null, null) { }
 
         public PixivBaseAPI(PixivBaseAPI BaseAPI) :
-            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection)
+            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection, BaseAPI.RefreshInterval)
         { }
 
         //用于生成带参数的url
@@ -236,12 +269,6 @@ namespace PixivCS
             return await Response.Content.ReadAsStreamAsync();
         }
 
-        public void SetAuth(string AccessToken, string RefreshToken = null)
-        {
-            this.AccessToken = AccessToken;
-            this.RefreshToken = RefreshToken;
-        }
-
         public void SetClient(string ClientID, string ClientSecret, string HashSecret)
         {
             clientID = ClientID;
@@ -252,6 +279,7 @@ namespace PixivCS
         //用户名和密码登录
         public async Task<JsonObject> Auth(string Username, string Password)
         {
+            if (AccessToken != null) throw new PixivException("Already authed");
             string MD5Hash(string Input)
             {
                 if (string.IsNullOrEmpty(Input)) return null;
