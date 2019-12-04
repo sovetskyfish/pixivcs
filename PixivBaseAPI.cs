@@ -23,8 +23,16 @@ namespace PixivCS
 
     public class RefreshEventArgs : EventArgs
     {
-        public string NreAccessToken { get; set; }
-        public string NewRefreshToken { get; set; }
+        public string NewAccessToken { get; }
+        public string NewRefreshToken { get; }
+        public bool IsSuccessful { get; }
+
+        public RefreshEventArgs(string NewAccessToken, string NewRefreshToken, bool IsSuccessful)
+        {
+            this.NewAccessToken = NewAccessToken;
+            this.NewRefreshToken = NewRefreshToken;
+            this.IsSuccessful = IsSuccessful;
+        }
     }
 
     public class PixivBaseAPI
@@ -78,8 +86,6 @@ namespace PixivCS
             }
         }
 
-        public bool? LastRefresh { get; private set; }
-
         DispatcherTimer refreshTimer = new DispatcherTimer();
 
         //自动刷新登录时执行
@@ -97,9 +103,19 @@ namespace PixivCS
             refreshTimer.Tick += RefreshTimer_Tick;
         }
 
-        private void RefreshTimer_Tick(object sender, object e)
+        private async void RefreshTimer_Tick(object sender, object e)
         {
             //每隔一定的时间刷新登录
+            try
+            {
+                _ = await Auth(RefreshToken);
+            }
+            catch
+            {
+                TokenRefreshed(this, new RefreshEventArgs(null, null, false));
+                return;
+            }
+            TokenRefreshed(this, new RefreshEventArgs(AccessToken, RefreshToken, true));
         }
 
         public PixivBaseAPI() : this(null, null, null) { }
@@ -279,7 +295,6 @@ namespace PixivCS
         //用户名和密码登录
         public async Task<JsonObject> Auth(string Username, string Password)
         {
-            if (AccessToken != null) throw new PixivException("Already authed");
             string MD5Hash(string Input)
             {
                 if (string.IsNullOrEmpty(Input)) return null;
