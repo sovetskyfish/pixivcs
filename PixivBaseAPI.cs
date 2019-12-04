@@ -82,7 +82,7 @@ namespace PixivCS
             set
             {
                 refreshInterval = value;
-                refreshTimer.Interval = TimeSpan.FromMinutes(value);
+                if (value > 0) refreshTimer.Interval = TimeSpan.FromMinutes(value);
             }
         }
 
@@ -333,6 +333,7 @@ namespace PixivCS
             AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
             UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
             RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
+            if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
 
@@ -360,6 +361,7 @@ namespace PixivCS
             AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
             UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
             this.RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
+            if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
     }
