@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Security.Cryptography;
 using Windows.Data.Json;
+using Windows.UI.Xaml;
 
 namespace PixivCS
 {
@@ -20,8 +21,28 @@ namespace PixivCS
         public PixivException(string msg) : base(msg) { }
     }
 
+    public class RefreshEventArgs : EventArgs
+    {
+        public string NewAccessToken { get; }
+        public string NewRefreshToken { get; }
+        public bool IsSuccessful { get; }
+
+        public RefreshEventArgs(string NewAccessToken, string NewRefreshToken, bool IsSuccessful)
+        {
+            this.NewAccessToken = NewAccessToken;
+            this.NewRefreshToken = NewRefreshToken;
+            this.IsSuccessful = IsSuccessful;
+        }
+    }
+
     public class PixivBaseAPI
     {
+
+        // 参考自下面的链接
+        // https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client#create-and-initialize-httpclient
+        // https://stackoverflow.com/questions/15705092/do-httpclient-and-httpclienthandler-have-to-be-disposed
+        private static readonly HttpClient _client = new HttpClient();
+
         internal string clientID = "MOBrBDS8blbauoSck0ZfDbtuzpyT";
         internal string clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
         internal string hashSecret = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c";
@@ -54,19 +75,53 @@ namespace PixivCS
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
 
+        private int refreshInterval;
+        public int RefreshInterval
+        {
+            get => refreshInterval;
+            set
+            {
+                refreshInterval = value;
+                if (value > 0) refreshTimer.Interval = TimeSpan.FromMinutes(value);
+            }
+        }
+
+        DispatcherTimer refreshTimer = new DispatcherTimer();
+
+        //自动刷新登录时执行
+        public event EventHandler<RefreshEventArgs> TokenRefreshed;
+
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
-            bool ExperimentalConnection = false)
+            bool ExperimentalConnection = false, int RefreshInterval = 45)
         {
             this.AccessToken = AccessToken;
             this.RefreshToken = RefreshToken;
             this.UserID = UserID;
             this.ExperimentalConnection = ExperimentalConnection;
+            this.RefreshInterval = RefreshInterval;
+            refreshTimer.Interval = TimeSpan.FromMinutes(RefreshInterval);
+            refreshTimer.Tick += RefreshTimer_Tick;
+        }
+
+        private async void RefreshTimer_Tick(object sender, object e)
+        {
+            //每隔一定的时间刷新登录
+            try
+            {
+                _ = await Auth(RefreshToken);
+            }
+            catch
+            {
+                TokenRefreshed(this, new RefreshEventArgs(null, null, false));
+                return;
+            }
+            TokenRefreshed(this, new RefreshEventArgs(AccessToken, RefreshToken, true));
         }
 
         public PixivBaseAPI() : this(null, null, null) { }
 
         public PixivBaseAPI(PixivBaseAPI BaseAPI) :
-            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection)
+            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection, BaseAPI.RefreshInterval)
         { }
 
         //用于生成带参数的url
@@ -96,9 +151,8 @@ namespace PixivCS
                 var targetSubject = TargetSubjects[targetIP];
                 var targetSN = TargetSNs[targetIP];
                 var targetTP = TargetTPs[targetIP];
-                using (var connection = await Task.Run(() => Utilities.CreateConnection(targetIP, (cert) =>
-                      cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP
-                    )))
+                using (var connection = await Utilities.CreateConnectionAsync(targetIP, (cert) =>
+                    cert.Subject == targetSubject && cert.SerialNumber == targetSN && cert.Thumbprint == targetTP))
                 {
                     var httpRequest = await Utilities.ConstructHTTPAsync(Method, queryUrl, Headers, Body);
                     await connection.WriteAsync(httpRequest, 0, httpRequest.Length);
@@ -201,23 +255,22 @@ namespace PixivCS
                 }
                 #endregion
             }
-            else
-                //传统手段
-                using (HttpClient client = new HttpClient())
-                {
-                    if (Headers != null)
-                        foreach ((var k, var v) in Headers)
-                            client.DefaultRequestHeaders.Add(k, v);
-                    switch (Method.ToLower())
-                    {
-                        case "get":
-                            return await client.GetAsync(queryUrl);
-                        case "post":
-                            return await client.PostAsync(queryUrl, Body);
-                        default:
-                            throw new PixivException("Unsupported method");
-                    }
-                }
+            else //传统手段
+            {
+                var allowMethods = new string[] { "get", "post" };
+                if (!allowMethods.Any(m => m.Equals(Method, StringComparison.OrdinalIgnoreCase)))
+                    throw new PixivException("Unsupported method");
+
+                var request = new HttpRequestMessage(new HttpMethod(Method), queryUrl);
+                if (Headers != null)
+                    foreach (var (k, v) in Headers)
+                        request.Headers.Add(k, v);
+
+                if (Body != null)
+                    request.Content = Body;
+
+                return await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+            }
         }
 
         //以字符串形式拿回Response
@@ -230,12 +283,6 @@ namespace PixivCS
         public static async Task<Stream> GetResponseStream(HttpResponseMessage Response)
         {
             return await Response.Content.ReadAsStreamAsync();
-        }
-
-        public void SetAuth(string AccessToken, string RefreshToken = null)
-        {
-            this.AccessToken = AccessToken;
-            this.RefreshToken = RefreshToken;
         }
 
         public void SetClient(string ClientID, string ClientSecret, string HashSecret)
@@ -286,6 +333,7 @@ namespace PixivCS
             AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
             UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
             RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
+            if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
 
@@ -313,6 +361,7 @@ namespace PixivCS
             AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
             UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
             this.RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
+            if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
     }
