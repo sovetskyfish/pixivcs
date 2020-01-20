@@ -120,10 +120,12 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ImgurNaoAPI.cs" />
+    <Compile Include="ImgurAPI.cs" />
+    <Compile Include="SauceNaoAPI.cs" />
     <Compile Include="PixivAppAPI.cs" />
     <Compile Include="PixivBaseAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TietukuAPI.cs" />
     <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="Properties\PixivCS.rd.xml" />
   </ItemGroup>
