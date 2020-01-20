@@ -79,7 +79,17 @@ Tietuku API
 SauceNAO API
 ---
 这个的返回值就比较厉害了
-我们只用 results[0]=>data=>pixiv_id  
+我们只用 results[x]=>data=>pixiv_id  
+那如果data里没有pixiv_id直接抛出异常遍历被强行中断怎么办？  
+```cs
+int pid;
+try{
+    pid = (int)data.GetNamedNumber("pixiv_id");
+}
+cache(Exception){
+     continue;
+}
+```
 以下是上传pid=36545288的返回结果..我反正是懒得处理了
 ```json
 {
