@@ -112,10 +112,10 @@ namespace PixivCS
             }
             catch
             {
-                TokenRefreshed(this, new RefreshEventArgs(null, null, false));
+                TokenRefreshed?.Invoke(this, new RefreshEventArgs(null, null, false));
                 return;
             }
-            TokenRefreshed(this, new RefreshEventArgs(AccessToken, RefreshToken, true));
+            TokenRefreshed?.Invoke(this, new RefreshEventArgs(AccessToken, RefreshToken, true));
         }
 
         public PixivBaseAPI() : this(null, null, null) { }
