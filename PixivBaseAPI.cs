@@ -49,24 +49,24 @@ namespace PixivCS
 
         public Dictionary<string, string> TargetIPs { get; set; } = new Dictionary<string, string>()
         {
-            {"oauth.secure.pixiv.net","210.140.131.224" },
-            {"www.pixiv.net","210.140.131.224" },
-            {"app-api.pixiv.net","210.140.131.224" }
+            {"oauth.secure.pixiv.net","210.140.131.188" },
+            {"www.pixiv.net","210.140.131.188" },
+            {"app-api.pixiv.net","210.140.131.188" }
         };
 
         public Dictionary<string, string> TargetSubjects { get; set; } = new Dictionary<string, string>()
         {
-            {"210.140.131.224","CN=*.pixiv.net, O=pixiv Inc., OU=Development department, L=Shibuya-ku, S=Tokyo, C=JP" },
+            {"210.140.131.188","CN=*.pixiv.net, O=pixiv Inc., OU=Development department, L=Shibuya-ku, S=Tokyo, C=JP" },
             {"210.140.92.142","CN=*.pximg.net, OU=Domain Control Validated" }
         };
         public Dictionary<string, string> TargetSNs { get; set; } = new Dictionary<string, string>()
         {
-            {"210.140.131.224","281941D074A6D4B07B72D729" },
+            {"210.140.131.188","281941D074A6D4B07B72D729" },
             {"210.140.92.142","2387DB20E84EFCF82492545C" }
         };
         public Dictionary<string, string> TargetTPs { get; set; } = new Dictionary<string, string>()
         {
-            {"210.140.131.224","352FCC13B920E12CD15F3875E52AEDB95B62972B" },
+            {"210.140.131.188","352FCC13B920E12CD15F3875E52AEDB95B62972B" },
             {"210.140.92.142","F4A431620F42E4D10EB42621C6948E3CD5014FB0" }
         };
 
