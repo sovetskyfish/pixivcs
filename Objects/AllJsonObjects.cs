@@ -9,6 +9,7 @@ using Newtonsoft.Json.Converters;
 
 namespace PixivCS.Objects
 {
+
     public partial class ShowcaseArticle
     {
         [JsonProperty("error")]
@@ -24,11 +25,10 @@ namespace PixivCS.Objects
     public partial class Body
     {
         [JsonProperty("id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("lang")]
-        public Lang Lang { get; set; }
+        public string Lang { get; set; }
 
         [JsonProperty("entry")]
         public Entry Entry { get; set; }
@@ -70,7 +70,7 @@ namespace PixivCS.Objects
         public RelatedArticle[] RelatedArticles { get; set; }
 
         [JsonProperty("followingUserIds")]
-        public object[] FollowingUserIds { get; set; }
+        public dynamic[] FollowingUserIds { get; set; }
 
         [JsonProperty("isOnlyOneUser")]
         public bool IsOnlyOneUser { get; set; }
@@ -79,8 +79,7 @@ namespace PixivCS.Objects
     public partial class Entry
     {
         [JsonProperty("id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("title")]
         public string Title { get; set; }
@@ -107,7 +106,7 @@ namespace PixivCS.Objects
         public long PublishDate { get; set; }
 
         [JsonProperty("language")]
-        public Lang Language { get; set; }
+        public string Language { get; set; }
 
         [JsonProperty("pixivision_category_slug")]
         public string PixivisionCategorySlug { get; set; }
@@ -131,12 +130,10 @@ namespace PixivCS.Objects
         public string Intro { get; set; }
 
         [JsonProperty("facebook_count")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long FacebookCount { get; set; }
+        public string FacebookCount { get; set; }
 
         [JsonProperty("twitter_count")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long TwitterCount { get; set; }
+        public string TwitterCount { get; set; }
     }
 
     public partial class PixivisionCategory
@@ -172,8 +169,7 @@ namespace PixivCS.Objects
     public partial class EntryTag
     {
         [JsonProperty("id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -191,64 +187,55 @@ namespace PixivCS.Objects
         public string Description { get; set; }
 
         [JsonProperty("language")]
-        public Lang Language { get; set; }
+        public string Language { get; set; }
 
         [JsonProperty("illust_user_id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustUserId { get; set; }
+        public string IllustUserId { get; set; }
 
         [JsonProperty("illust_title")]
         public string IllustTitle { get; set; }
 
         [JsonProperty("illust_ext")]
-        public IllustExt IllustExt { get; set; }
+        public string IllustExt { get; set; }
 
         [JsonProperty("illust_width")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustWidth { get; set; }
+        public string IllustWidth { get; set; }
 
         [JsonProperty("illust_height")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustHeight { get; set; }
+        public string IllustHeight { get; set; }
 
         [JsonProperty("illust_restrict")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustRestrict { get; set; }
+        public string IllustRestrict { get; set; }
 
         [JsonProperty("illust_x_restrict")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustXRestrict { get; set; }
+        public string IllustXRestrict { get; set; }
 
         [JsonProperty("illust_create_date")]
-        public DateTimeOffset IllustCreateDate { get; set; }
+        public string IllustCreateDate { get; set; }
 
         [JsonProperty("illust_upload_date")]
-        public DateTimeOffset IllustUploadDate { get; set; }
+        public string IllustUploadDate { get; set; }
 
         [JsonProperty("illust_server_id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustServerId { get; set; }
+        public string IllustServerId { get; set; }
 
         [JsonProperty("illust_hash")]
         public string IllustHash { get; set; }
 
         [JsonProperty("illust_type")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustType { get; set; }
+        public string IllustType { get; set; }
 
         [JsonProperty("illust_sanity_level")]
         public long IllustSanityLevel { get; set; }
 
         [JsonProperty("illust_book_style")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustBookStyle { get; set; }
+        public string IllustBookStyle { get; set; }
 
         [JsonProperty("illust_page_count")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IllustPageCount { get; set; }
+        public string IllustPageCount { get; set; }
 
         [JsonProperty("illust_custom_thumbnail_upload_datetime")]
-        public object IllustCustomThumbnailUploadDatetime { get; set; }
+        public dynamic IllustCustomThumbnailUploadDatetime { get; set; }
 
         [JsonProperty("illust_comment")]
         public string IllustComment { get; set; }
@@ -266,7 +253,7 @@ namespace PixivCS.Objects
         public Url Url { get; set; }
 
         [JsonProperty("ugoira_meta")]
-        public object UgoiraMeta { get; set; }
+        public dynamic UgoiraMeta { get; set; }
 
         [JsonProperty("user_icon")]
         public Uri UserIcon { get; set; }
@@ -290,8 +277,7 @@ namespace PixivCS.Objects
     public partial class RelatedArticle
     {
         [JsonProperty("id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("ja")]
         public PrivacyPolicy Ja { get; set; }
@@ -321,69 +307,58 @@ namespace PixivCS.Objects
         public string Thumbnail { get; set; }
 
         [JsonProperty("thumbnail_illust_id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long ThumbnailIllustId { get; set; }
+        public string ThumbnailIllustId { get; set; }
 
         [JsonProperty("has_body")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long HasBody { get; set; }
+        public string HasBody { get; set; }
 
         [JsonProperty("is_pr")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IsPr { get; set; }
+        public string IsPr { get; set; }
 
         [JsonProperty("pr_client_name")]
         public string PrClientName { get; set; }
 
         [JsonProperty("edit_status")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long EditStatus { get; set; }
+        public string EditStatus { get; set; }
 
         [JsonProperty("translation_status")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long TranslationStatus { get; set; }
+        public string TranslationStatus { get; set; }
 
         [JsonProperty("is_sample")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long IsSample { get; set; }
+        public string IsSample { get; set; }
 
         [JsonProperty("illusts")]
-        public object[] Illusts { get; set; }
+        public dynamic[] Illusts { get; set; }
 
         [JsonProperty("novel_ids")]
-        public object[] NovelIds { get; set; }
+        public dynamic[] NovelIds { get; set; }
 
         [JsonProperty("memo")]
         public string Memo { get; set; }
 
         [JsonProperty("facebook_count")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long FacebookCount { get; set; }
+        public string FacebookCount { get; set; }
 
         [JsonProperty("tweet_count")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long TweetCount { get; set; }
+        public string TweetCount { get; set; }
 
         [JsonProperty("tweet_max_count")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long TweetMaxCount { get; set; }
+        public string TweetMaxCount { get; set; }
 
         [JsonProperty("tags")]
-        public object[] Tags { get; set; }
+        public dynamic[] Tags { get; set; }
 
         [JsonProperty("tag_ids")]
-        public object TagIds { get; set; }
+        public dynamic TagIds { get; set; }
 
         [JsonProperty("numbered_tags")]
-        public object[] NumberedTags { get; set; }
+        public dynamic[] NumberedTags { get; set; }
 
         [JsonProperty("main_abtest_pattern_id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long MainAbtestPatternId { get; set; }
+        public string MainAbtestPatternId { get; set; }
 
         [JsonProperty("advertisement_id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long AdvertisementId { get; set; }
+        public string AdvertisementId { get; set; }
     }
 
     public partial class PrivacyPolicy
@@ -423,7 +398,7 @@ namespace PixivCS.Objects
     public partial class UserList
     {
         [JsonProperty("users")]
-        public object[] Users { get; set; }
+        public dynamic[] Users { get; set; }
     }
 
     public partial class UserFollowing
@@ -444,7 +419,7 @@ namespace PixivCS.Objects
         public UserPreviewIllust[] Illusts { get; set; }
 
         [JsonProperty("novels")]
-        public object[] Novels { get; set; }
+        public dynamic[] Novels { get; set; }
 
         [JsonProperty("is_muted")]
         public bool IsMuted { get; set; }
@@ -459,7 +434,7 @@ namespace PixivCS.Objects
         public string Title { get; set; }
 
         [JsonProperty("type")]
-        public TypeEnum Type { get; set; }
+        public string Type { get; set; }
 
         [JsonProperty("image_urls")]
         public ImageUrls ImageUrls { get; set; }
@@ -480,7 +455,7 @@ namespace PixivCS.Objects
         public string[] Tools { get; set; }
 
         [JsonProperty("create_date")]
-        public DateTimeOffset CreateDate { get; set; }
+        public string CreateDate { get; set; }
 
         [JsonProperty("page_count")]
         public long PageCount { get; set; }
@@ -567,7 +542,7 @@ namespace PixivCS.Objects
         public string Name { get; set; }
 
         [JsonProperty("translated_name")]
-        public object TranslatedName { get; set; }
+        public dynamic TranslatedName { get; set; }
     }
 
     public partial class IllustUser
@@ -594,7 +569,7 @@ namespace PixivCS.Objects
     public partial class UserBookmarkTags
     {
         [JsonProperty("bookmark_tags")]
-        public object[] BookmarkTags { get; set; }
+        public dynamic[] BookmarkTags { get; set; }
 
         [JsonProperty("next_url")]
         public Uri NextUrl { get; set; }
@@ -651,7 +626,7 @@ namespace PixivCS.Objects
         public string Tag { get; set; }
 
         [JsonProperty("translated_name")]
-        public object TranslatedName { get; set; }
+        public dynamic TranslatedName { get; set; }
 
         [JsonProperty("illust")]
         public UserPreviewIllust Illust { get; set; }
@@ -672,7 +647,7 @@ namespace PixivCS.Objects
         public UserPreviewIllust[] Illusts { get; set; }
 
         [JsonProperty("ranking_illusts")]
-        public object[] RankingIllusts { get; set; }
+        public dynamic[] RankingIllusts { get; set; }
 
         [JsonProperty("contest_exists")]
         public bool ContestExists { get; set; }
@@ -699,7 +674,7 @@ namespace PixivCS.Objects
         public string CommentComment { get; set; }
 
         [JsonProperty("date")]
-        public DateTimeOffset Date { get; set; }
+        public string Date { get; set; }
 
         [JsonProperty("user")]
         public IllustUser User { get; set; }
@@ -747,13 +722,13 @@ namespace PixivCS.Objects
     public partial class Profile
     {
         [JsonProperty("webpage")]
-        public object Webpage { get; set; }
+        public dynamic Webpage { get; set; }
 
         [JsonProperty("gender")]
         public string Gender { get; set; }
 
         [JsonProperty("birth")]
-        public DateTimeOffset Birth { get; set; }
+        public string Birth { get; set; }
 
         [JsonProperty("birth_day")]
         public string BirthDay { get; set; }
@@ -801,16 +776,16 @@ namespace PixivCS.Objects
         public long TotalNovelSeries { get; set; }
 
         [JsonProperty("background_image_url")]
-        public object BackgroundImageUrl { get; set; }
+        public dynamic BackgroundImageUrl { get; set; }
 
         [JsonProperty("twitter_account")]
         public string TwitterAccount { get; set; }
 
         [JsonProperty("twitter_url")]
-        public object TwitterUrl { get; set; }
+        public dynamic TwitterUrl { get; set; }
 
         [JsonProperty("pawoo_url")]
-        public object PawooUrl { get; set; }
+        public dynamic PawooUrl { get; set; }
 
         [JsonProperty("is_premium")]
         public bool IsPremium { get; set; }
@@ -879,7 +854,7 @@ namespace PixivCS.Objects
         public string Comment { get; set; }
 
         [JsonProperty("workspace_image_url")]
-        public object WorkspaceImageUrl { get; set; }
+        public dynamic WorkspaceImageUrl { get; set; }
     }
 
     public partial class AuthResult
@@ -918,8 +893,7 @@ namespace PixivCS.Objects
         public ProfileImageUrls ProfileImageUrls { get; set; }
 
         [JsonProperty("id")]
-        [JsonConverter(typeof(ParseStringConverter))]
-        public long Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -951,12 +925,6 @@ namespace PixivCS.Objects
         [JsonProperty("px_170x170")]
         public Uri Px170X170 { get; set; }
     }
-
-    public enum Lang { Ja };
-
-    public enum IllustExt { Jpg, Png };
-
-    public enum TypeEnum { Illust, Manga, Ugoira };
 
     public partial class ShowcaseArticle
     {
@@ -1090,163 +1058,8 @@ namespace PixivCS.Objects
             DateParseHandling = DateParseHandling.None,
             Converters =
             {
-                LangConverter.Singleton,
-                IllustExtConverter.Singleton,
-                TypeEnumConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };
-    }
-
-    internal class ParseStringConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(long) || t == typeof(long?);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-            var value = serializer.Deserialize<string>(reader);
-            long l;
-            if (Int64.TryParse(value, out l))
-            {
-                return l;
-            }
-            throw new Exception("Cannot unmarshal type long");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
-                serializer.Serialize(writer, null);
-                return;
-            }
-            var value = (long)untypedValue;
-            serializer.Serialize(writer, value.ToString());
-            return;
-        }
-
-        public static readonly ParseStringConverter Singleton = new ParseStringConverter();
-    }
-
-    internal class LangConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(Lang) || t == typeof(Lang?);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-            var value = serializer.Deserialize<string>(reader);
-            if (value == "ja")
-            {
-                return Lang.Ja;
-            }
-            throw new Exception("Cannot unmarshal type Lang");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
-                serializer.Serialize(writer, null);
-                return;
-            }
-            var value = (Lang)untypedValue;
-            if (value == Lang.Ja)
-            {
-                serializer.Serialize(writer, "ja");
-                return;
-            }
-            throw new Exception("Cannot marshal type Lang");
-        }
-
-        public static readonly LangConverter Singleton = new LangConverter();
-    }
-
-    internal class IllustExtConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(IllustExt) || t == typeof(IllustExt?);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-            var value = serializer.Deserialize<string>(reader);
-            switch (value)
-            {
-                case "jpg":
-                    return IllustExt.Jpg;
-                case "png":
-                    return IllustExt.Png;
-            }
-            throw new Exception("Cannot unmarshal type IllustExt");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
-                serializer.Serialize(writer, null);
-                return;
-            }
-            var value = (IllustExt)untypedValue;
-            switch (value)
-            {
-                case IllustExt.Jpg:
-                    serializer.Serialize(writer, "jpg");
-                    return;
-                case IllustExt.Png:
-                    serializer.Serialize(writer, "png");
-                    return;
-            }
-            throw new Exception("Cannot marshal type IllustExt");
-        }
-
-        public static readonly IllustExtConverter Singleton = new IllustExtConverter();
-    }
-
-    internal class TypeEnumConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(TypeEnum) || t == typeof(TypeEnum?);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-            var value = serializer.Deserialize<string>(reader);
-            switch (value)
-            {
-                case "illust":
-                    return TypeEnum.Illust;
-                case "manga":
-                    return TypeEnum.Manga;
-                case "ugoira":
-                    return TypeEnum.Ugoira;
-            }
-            throw new Exception("Cannot unmarshal type TypeEnum");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
-                serializer.Serialize(writer, null);
-                return;
-            }
-            var value = (TypeEnum)untypedValue;
-            switch (value)
-            {
-                case TypeEnum.Illust:
-                    serializer.Serialize(writer, "illust");
-                    return;
-                case TypeEnum.Manga:
-                    serializer.Serialize(writer, "manga");
-                    return;
-                case TypeEnum.Ugoira:
-                    serializer.Serialize(writer, "ugoira");
-                    return;
-            }
-            throw new Exception("Cannot marshal type TypeEnum");
-        }
-
-        public static readonly TypeEnumConverter Singleton = new TypeEnumConverter();
     }
 }
