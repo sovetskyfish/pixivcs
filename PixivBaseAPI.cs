@@ -377,7 +377,7 @@ namespace PixivCS
                 throw new PixivException("[ERROR] Auth() failed! Check Username and Password.");
             var resJSON = Objects.AuthResult.FromJson(await GetResponseString(res));
             AccessToken = resJSON.Response.AccessToken;
-            UserID = resJSON.Response.User.Id.ToString();
+            UserID = resJSON.Response.User.Id;
             RefreshToken = resJSON.Response.RefreshToken;
             if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
@@ -434,7 +434,7 @@ namespace PixivCS
                 throw new PixivException("[ERROR] Auth() failed! Check Username and Password.");
             var resJSON = Objects.AuthResult.FromJson(await GetResponseString(res));
             AccessToken = resJSON.Response.AccessToken;
-            UserID = resJSON.Response.User.Id.ToString();
+            UserID = resJSON.Response.User.Id;
             RefreshToken = resJSON.Response.RefreshToken;
             if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
