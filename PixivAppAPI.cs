@@ -36,6 +36,7 @@ namespace PixivCS
         }
 
         //用户详情
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserDetailAsync instead.")]
         public async Task<JsonObject> UserDetail(string UserID, string Filter = "for_ios",
             bool RequireAuth = true)
         {
@@ -50,6 +51,7 @@ namespace PixivCS
         }
 
         //用户作品
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserIllustsAsync instead.")]
         public async Task<JsonObject> UserIllusts(string UserID, string IllustType = "illust",
             string Filter = "for_ios", string Offset = null, bool RequireAuth = true)
         {
@@ -66,6 +68,7 @@ namespace PixivCS
         }
 
         //用户收藏
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserBookmarksIllustAsync instead.")]
         public async Task<JsonObject> UserBookmarksIllust(string UserID, string Restrict = "public",
             string Filter = "for_ios", string MaxBookmarkID = null, string Tag = null,
             bool RequireAuth = true)
@@ -84,6 +87,7 @@ namespace PixivCS
         }
 
         //关注者的新作品
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustFollowAsync instead.")]
         public async Task<JsonObject> IllustFollow(string Restrict = "public", string Offset = null,
             bool RequireAuth = true)
         {
@@ -98,6 +102,7 @@ namespace PixivCS
         }
 
         //作品详情
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustDetailAsync instead.")]
         public async Task<JsonObject> IllustDetail(string IllustID, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/illust/detail";
@@ -111,6 +116,7 @@ namespace PixivCS
 
         //作品评论
         //IncludeTotalComments决定是否在返回的JSON中包含总评论数
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustCommentsAsync instead.")]
         public async Task<JsonObject> IllustComments(string IllustID, string Offset = null,
             bool? IncludeTotalComments = null, bool RequireAuth = true)
         {
@@ -127,6 +133,7 @@ namespace PixivCS
         }
 
         //发表评论
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use PostIllustCommentAddAsync instead.")]
         public async Task<JsonObject> IllustCommentAdd(string IllustID, string Comment,
             string ParentCommentID = null, bool RequireAuth = true)
         {
@@ -144,6 +151,7 @@ namespace PixivCS
         }
 
         //相关作品
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustRelatedAsync instead.")]
         public async Task<JsonObject> IllustRelated(string IllustID, string Filter = "for_ios",
             List<string> SeedIllustIDs = null, bool RequireAuth = true)
         {
@@ -164,6 +172,7 @@ namespace PixivCS
 
         //首页推荐
         //content_type: [illust, manga]
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustRecommendedAsync instead.")]
         public async Task<JsonObject> IllustRecommended(string ContentType = "illust",
             bool IncludeRankingLabel = true, string Filter = "for_ios",
             string MaxBookmarkIDForRecommended = null,
@@ -204,6 +213,7 @@ namespace PixivCS
         //作品排行
         //mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
         //date: yyyy-mm-dd
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustRankingAsync instead.")]
         public async Task<JsonObject> IllustRanking(string Mode = "day", string Filter = "for_ios",
             string Date = null, string Offset = null, bool RequireAuth = true)
         {
@@ -220,6 +230,7 @@ namespace PixivCS
         }
 
         //趋势标签
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetTrendingTagsIllustAsync instead.")]
         public async Task<JsonObject> TrendingTagsIllust(string Filter = "for_ios", bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/trending-tags/illust";
@@ -238,6 +249,7 @@ namespace PixivCS
         //  title_and_caption       - 标题说明文
         //sort: [date_desc, date_asc]
         //duration: [within_last_day, within_last_week, within_last_month]
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetSearchIllustAsync instead.")]
         public async Task<JsonObject> SearchIllust(string Word, string SearchTarget = "partial_match_for_tags",
             string Sort = "date_desc", string Duration = null, string Filter = "for_ios", string Offset = null,
             bool RequireAuth = true)
@@ -257,6 +269,7 @@ namespace PixivCS
         }
 
         //作品收藏详情
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustBookmarkDetailAsync instead.")]
         public async Task<JsonObject> IllustBookmarkDetail(string IllustID, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v2/illust/bookmark/detail";
@@ -269,6 +282,7 @@ namespace PixivCS
         }
 
         //新增收藏
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use PostIllustBookmarkAddAsync instead.")]
         public async Task<JsonObject> IllustBookmarkAdd(string IllustID, string Restrict = "public",
             List<string> Tags = null, bool RequireAuth = true)
         {
@@ -291,6 +305,7 @@ namespace PixivCS
         }
 
         //删除收藏
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use PostIllustBookmarkDeleteAsync instead.")]
         public async Task<JsonObject> IllustBookmarkDelete(string IllustID, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/illust/bookmark/delete";
@@ -304,6 +319,7 @@ namespace PixivCS
         }
 
         //用户收藏标签列表
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserBookmarkTagsIllustAsync instead.")]
         public async Task<JsonObject> UserBookmarkTagsIllust(string Restrict = "public", string Offset = null,
             bool RequireAuth = true)
         {
@@ -318,6 +334,7 @@ namespace PixivCS
         }
 
         //Following用户列表
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserFollowingAsync instead.")]
         public async Task<JsonObject> UserFollowing(string UserID, string Restrict = "public",
             string Offset = null, bool RequireAuth = true)
         {
@@ -333,6 +350,7 @@ namespace PixivCS
         }
 
         //Followers用户列表
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserFollowerAsync instead.")]
         public async Task<JsonObject> UserFollower(string UserID, string Restrict = "public",
             string Offset = null, bool RequireAuth = true)
         {
@@ -348,6 +366,7 @@ namespace PixivCS
         }
 
         //关注用户
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use PostUserFollowAddAsync instead.")]
         public async Task<JsonObject> UserFollowAdd(string UserID, string Restrict = "public",
             bool RequireAuth = true)
         {
@@ -363,6 +382,7 @@ namespace PixivCS
         }
 
         //取关用户
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use PostUserFollowDeleteAsync instead.")]
         public async Task<JsonObject> UserFollowDelete(string UserID, string Restrict = "public",
             bool RequireAuth = true)
         {
@@ -378,6 +398,7 @@ namespace PixivCS
         }
 
         //好P友
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserMyPixivAsync instead.")]
         public async Task<JsonObject> UserMyPixiv(string UserID, string Offset = null,
             bool RequireAuth = true)
         {
@@ -392,6 +413,7 @@ namespace PixivCS
         }
 
         //黑名单用户
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserListAsync instead.")]
         public async Task<JsonObject> UserList(string UserID, string Filter = "for_ios",
             string Offset = null, bool RequireAuth = true)
         {
@@ -407,6 +429,7 @@ namespace PixivCS
         }
 
         //Ugoira信息
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUgoiraMetadataAsync instead.")]
         public async Task<JsonObject> UgoiraMetadata(string IllustID, bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v1/ugoira/metadata";
@@ -419,6 +442,7 @@ namespace PixivCS
         }
 
         //特辑详情（伪装成Chrome）
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetShowcaseArticleAsync instead.")]
         public async Task<JsonObject> ShowcaseArticle(string ShowcaseID)
         {
             string url = "https://www.pixiv.net/ajax/showcase/article";

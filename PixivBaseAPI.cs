@@ -293,6 +293,7 @@ namespace PixivCS
         }
 
         //用户名和密码登录
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use AuthAsync instead.")]
         public async Task<JsonObject> Auth(string Username, string Password)
         {
             string MD5Hash(string Input)
@@ -338,6 +339,7 @@ namespace PixivCS
         }
 
         //RefreshToken登录
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use AuthAsync instead.")]
         public async Task<JsonObject> Auth(string RefreshToken)
         {
             string url = "https://oauth.secure.pixiv.net/auth/token";
