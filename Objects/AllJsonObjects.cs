@@ -542,7 +542,7 @@ namespace PixivCS.Objects
         public string Name { get; set; }
 
         [JsonProperty("translated_name")]
-        public dynamic TranslatedName { get; set; }
+        public string TranslatedName { get; set; }
     }
 
     public partial class IllustUser
@@ -626,7 +626,7 @@ namespace PixivCS.Objects
         public string Tag { get; set; }
 
         [JsonProperty("translated_name")]
-        public dynamic TranslatedName { get; set; }
+        public string TranslatedName { get; set; }
 
         [JsonProperty("illust")]
         public UserPreviewIllust Illust { get; set; }
@@ -776,16 +776,16 @@ namespace PixivCS.Objects
         public long TotalNovelSeries { get; set; }
 
         [JsonProperty("background_image_url")]
-        public dynamic BackgroundImageUrl { get; set; }
+        public Uri BackgroundImageUrl { get; set; }
 
         [JsonProperty("twitter_account")]
         public string TwitterAccount { get; set; }
 
         [JsonProperty("twitter_url")]
-        public dynamic TwitterUrl { get; set; }
+        public Uri TwitterUrl { get; set; }
 
         [JsonProperty("pawoo_url")]
-        public dynamic PawooUrl { get; set; }
+        public Uri PawooUrl { get; set; }
 
         [JsonProperty("is_premium")]
         public bool IsPremium { get; set; }
@@ -854,7 +854,7 @@ namespace PixivCS.Objects
         public string Comment { get; set; }
 
         [JsonProperty("workspace_image_url")]
-        public dynamic WorkspaceImageUrl { get; set; }
+        public Uri WorkspaceImageUrl { get; set; }
     }
 
     public partial class AuthResult
