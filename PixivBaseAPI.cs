@@ -108,7 +108,7 @@ namespace PixivCS
             //每隔一定的时间刷新登录
             try
             {
-                _ = await Auth(RefreshToken);
+                _ = await AuthAsync(RefreshToken);
             }
             catch
             {
@@ -338,6 +338,51 @@ namespace PixivCS
             return resJSON;
         }
 
+        //用户名和密码登录
+        public async Task<Objects.AuthResult> AuthAsync(string Username, string Password)
+        {
+            string MD5Hash(string Input)
+            {
+                if (string.IsNullOrEmpty(Input)) return null;
+                using (var md5 = MD5.Create())
+                {
+                    var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(Input.Trim()));
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < bytes.Length; i++)
+                        builder.Append(bytes[i].ToString("x2"));
+                    return builder.ToString();
+                }
+            }
+            string url = "https://oauth.secure.pixiv.net/auth/token";
+            string time = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:sszzz");
+
+            Dictionary<string, string> headers = new Dictionary<string, string>
+            {
+                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" },
+                { "X-Client-Time", time },
+                { "X-Client-Hash", MD5Hash(time+hashSecret) }
+            };
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "get_secure_url", "1" },
+                { "client_id", clientID },
+                { "client_secret", clientSecret },
+                { "grant_type", "password" },
+                { "username", Username },
+                { "password", Password }
+            };
+            var res = await RequestCall("POST", url, headers, Body: new FormUrlEncodedContent(data));
+            int status = (int)res.StatusCode;
+            if (!(status == 200 || status == 301 || status == 302))
+                throw new PixivException("[ERROR] Auth() failed! Check Username and Password.");
+            var resJSON = Objects.AuthResult.FromJson(await GetResponseString(res));
+            AccessToken = resJSON.Response.AccessToken;
+            UserID = resJSON.Response.User.Id.ToString();
+            RefreshToken = resJSON.Response.RefreshToken;
+            if (RefreshInterval > 0) refreshTimer.Start();
+            return resJSON;
+        }
+
         //RefreshToken登录
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use AuthAsync instead.")]
         public async Task<JsonObject> Auth(string RefreshToken)
@@ -363,6 +408,34 @@ namespace PixivCS
             AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
             UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
             this.RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
+            if (RefreshInterval > 0) refreshTimer.Start();
+            return resJSON;
+        }
+
+        //RefreshToken登录
+        public async Task<Objects.AuthResult> AuthAsync(string RefreshToken)
+        {
+            string url = "https://oauth.secure.pixiv.net/auth/token";
+            Dictionary<string, string> headers = new Dictionary<string, string>
+            {
+                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" }
+            };
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "get_secure_url", "1" },
+                { "client_id", clientID },
+                { "client_secret", clientSecret },
+                { "grant_type", "refresh_token" },
+                { "refresh_token", RefreshToken }
+            };
+            var res = await RequestCall("POST", url, headers, Body: new FormUrlEncodedContent(data));
+            int status = (int)res.StatusCode;
+            if (!(status == 200 || status == 301 || status == 302))
+                throw new PixivException("[ERROR] Auth() failed! Check Username and Password.");
+            var resJSON = Objects.AuthResult.FromJson(await GetResponseString(res));
+            AccessToken = resJSON.Response.AccessToken;
+            UserID = resJSON.Response.User.Id.ToString();
+            RefreshToken = resJSON.Response.RefreshToken;
             if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
