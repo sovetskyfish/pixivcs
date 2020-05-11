@@ -750,6 +750,20 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //好P友
+        public async Task<Objects.UserFollowList> GetUserMyPixivAsync(string UserID, string Offset = null,
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/mypixiv";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("user_id", UserID)
+            };
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.UserMyPixiv.FromJson(await GetResponseString(res));
+        }
+
         //黑名单用户
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserListAsync instead.")]
         public async Task<JsonObject> UserList(string UserID, string Filter = "for_ios",
