@@ -50,6 +50,21 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //用户详情
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserDetailAsync instead.")]
+        public async Task<Objects.UserDetail> GetUserDetailAsync(string UserID, string Filter = "for_ios",
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/detail";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("user_id", UserID),
+                ("filter", Filter)
+            };
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.UserDetail.FromJson(await GetResponseString(res));
+        }
+
         //用户作品
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserIllustsAsync instead.")]
         public async Task<JsonObject> UserIllusts(string UserID, string IllustType = "illust",
