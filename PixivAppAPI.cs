@@ -51,7 +51,6 @@ namespace PixivCS
         }
 
         //用户详情
-        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserDetailAsync instead.")]
         public async Task<Objects.UserDetail> GetUserDetailAsync(string UserID, string Filter = "for_ios",
             bool RequireAuth = true)
         {
@@ -80,6 +79,22 @@ namespace PixivCS
             if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //用户作品
+        public async Task<Objects.UserIllusts> GetUserIllustsAsync(string UserID, string IllustType = "illust",
+            string Filter = "for_ios", string Offset = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/illusts";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("user_id", UserID),
+                ("filter", Filter)
+            };
+            if (!string.IsNullOrEmpty(IllustType)) query.Add(("type", IllustType));
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.UserIllusts.FromJson(await GetResponseString(res));
         }
 
         //用户收藏
