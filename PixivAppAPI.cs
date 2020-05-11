@@ -808,6 +808,18 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //Ugoira信息
+        public async Task<Objects.UgoiraMetadata> GetUgoiraMetadataAsync(string IllustID, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/ugoira/metadata";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("illust_id", IllustID)
+            };
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.UgoiraMetadata.FromJson(await GetResponseString(res));
+        }
+
         //特辑详情（伪装成Chrome）
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetShowcaseArticleAsync instead.")]
         public async Task<JsonObject> ShowcaseArticle(string ShowcaseID)
