@@ -721,6 +721,20 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //取关用户
+        public async Task PostUserFollowDeleteAsync(string UserID, string Restrict = "public",
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/user/follow/delete";
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "user_id", UserID },
+                { "restrict", Restrict }
+            };
+            await RequestCall("POST", url, Body: new FormUrlEncodedContent(data),
+                RequireAuth: RequireAuth);
+        }
+
         //好P友
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUserMyPixivAsync instead.")]
         public async Task<JsonObject> UserMyPixiv(string UserID, string Offset = null,
