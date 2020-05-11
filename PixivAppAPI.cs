@@ -206,6 +206,23 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //作品评论
+        //IncludeTotalComments决定是否在返回的JSON中包含总评论数
+        public async Task<Objects.IllustComments> GetIllustCommentsAsync(string IllustID, string Offset = null,
+            bool? IncludeTotalComments = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/illust/comments";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("illust_id", IllustID)
+            };
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            if (IncludeTotalComments != null) query.Add(("include_total_comments",
+                IncludeTotalComments.Value ? "true" : "false"));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.IllustComments.FromJson(await GetResponseString(res));
+        }
+
         //发表评论
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use PostIllustCommentAddAsync instead.")]
         public async Task<JsonObject> IllustCommentAdd(string IllustID, string Comment,
