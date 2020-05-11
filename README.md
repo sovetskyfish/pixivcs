@@ -7,4 +7,5 @@ Pixiv API implemented in C#. Sourced from [pixivpy](https://github.com/upbit/pix
 - [x] Mark old methods as Obsolete;
 - [x] Complete new methods;
 - [ ] Raise compilation errors if developers try to use old methods;
+- [ ] Remove old methods;
 - [ ] Convert the project to .NET Standard 2.0;
