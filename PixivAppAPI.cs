@@ -241,6 +241,23 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //发表评论
+        public async Task<Objects.IllustCommentAddResult> PostIllustCommentAddAsync(string IllustID, string Comment,
+            string ParentCommentID = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/illust/comment/add";
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "illust_id", IllustID },
+                { "comment", Comment }
+            };
+            if (!string.IsNullOrWhiteSpace(ParentCommentID))
+                data.Add("parent_comment_id", ParentCommentID);
+            var res = await RequestCall("POST", url, Body: new FormUrlEncodedContent(data),
+                RequireAuth: RequireAuth);
+            return Objects.IllustCommentAddResult.FromJson(await GetResponseString(res));
+        }
+
         //相关作品
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustRelatedAsync instead.")]
         public async Task<JsonObject> IllustRelated(string IllustID, string Filter = "for_ios",
