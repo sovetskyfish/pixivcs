@@ -337,6 +337,45 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //首页推荐
+        //content_type: [illust, manga]
+        public async Task<Objects.IllustRecommended> GetIllustRecommendedAsync(string ContentType = "illust",
+            bool IncludeRankingLabel = true, string Filter = "for_ios",
+            string MaxBookmarkIDForRecommended = null,
+            string MinBookmarkIDForRecentIllust = null, string Offset = null,
+            bool? IncludeRankingIllusts = null, List<string> BookmarkIllustIDs = null,
+            string IncludePrivacyPolicy = null, bool RequireAuth = true)
+        {
+            string url = RequireAuth ? "https://app-api.pixiv.net/v1/illust/recommended" :
+                "https://app-api.pixiv.net/v1/illust/recommended-nologin";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("content_type", ContentType),
+                ("include_ranking_label", IncludeRankingLabel ? "true" : "false"),
+                ("filter", Filter)
+            };
+            if (!string.IsNullOrEmpty(MaxBookmarkIDForRecommended))
+                query.Add(("max_bookmark_id_for_recommend", MaxBookmarkIDForRecommended));
+            if (!string.IsNullOrEmpty(MinBookmarkIDForRecentIllust))
+                query.Add(("min_bookmark_id_for_recent_illust", MinBookmarkIDForRecentIllust));
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            if (IncludeRankingIllusts != null)
+                query.Add(("include_ranking_illusts", IncludeRankingIllusts.Value ? "true" : "false"));
+            string ids = "";
+            if (BookmarkIllustIDs != null)
+                foreach (var i in BookmarkIllustIDs)
+                    ids += (i + ",");
+            if (ids != "")
+            {
+                ids.TrimEnd(',');
+                query.Add(("bookmark_illust_ids", ids));
+            }
+            if (!string.IsNullOrEmpty(IncludePrivacyPolicy))
+                query.Add(("include_privacy_policy", IncludePrivacyPolicy));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.IllustRecommended.FromJson(await GetResponseString(res));
+        }
+
         //作品排行
         //mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
         //date: yyyy-mm-dd
@@ -354,6 +393,25 @@ namespace PixivCS
             if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //作品排行
+        //mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
+        //date: yyyy-mm-dd
+        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustRankingAsync instead.")]
+        public async Task<Objects.UserIllusts> GetIllustRankingAsync(string Mode = "day", string Filter = "for_ios",
+            string Date = null, string Offset = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/illust/ranking";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("mode", Mode),
+                ("filter", Filter)
+            };
+            if (!string.IsNullOrEmpty(Date)) query.Add(("date", Date));
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.IllustRanking.FromJson(await GetResponseString(res));
         }
 
         //趋势标签
