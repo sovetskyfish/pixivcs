@@ -176,6 +176,18 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //作品详情
+        public async Task<Objects.IllustDetail> GetIllustDetailAsync(string IllustID, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/illust/detail";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("illust_id", IllustID)
+            };
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.IllustDetail.FromJson(await GetResponseString(res));
+        }
+
         //作品评论
         //IncludeTotalComments决定是否在返回的JSON中包含总评论数
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustCommentsAsync instead.")]
