@@ -401,7 +401,7 @@ namespace PixivCS.Objects
         public dynamic[] Users { get; set; }
     }
 
-    public partial class UserFollowing
+    public partial class UserFollowList
     {
         [JsonProperty("user_previews")]
         public UserPreview[] UserPreviews { get; set; }
@@ -943,17 +943,17 @@ namespace PixivCS.Objects
 
     public partial class UserMyPixiv
     {
-        public static UserFollowing FromJson(string json) => JsonConvert.DeserializeObject<UserFollowing>(json, PixivCS.Objects.Converter.Settings);
+        public static UserFollowList FromJson(string json) => JsonConvert.DeserializeObject<UserFollowList>(json, PixivCS.Objects.Converter.Settings);
     }
 
     public partial class UserFollower
     {
-        public static UserFollowing FromJson(string json) => JsonConvert.DeserializeObject<UserFollowing>(json, PixivCS.Objects.Converter.Settings);
+        public static UserFollowList FromJson(string json) => JsonConvert.DeserializeObject<UserFollowList>(json, PixivCS.Objects.Converter.Settings);
     }
 
-    public partial class UserFollowing
+    public partial class UserFollowList
     {
-        public static UserFollowing FromJson(string json) => JsonConvert.DeserializeObject<UserFollowing>(json, PixivCS.Objects.Converter.Settings);
+        public static UserFollowList FromJson(string json) => JsonConvert.DeserializeObject<UserFollowList>(json, PixivCS.Objects.Converter.Settings);
     }
 
     public partial class UserBookmarkTags
@@ -1036,7 +1036,7 @@ namespace PixivCS.Objects
         public static string ToJson(this ShowcaseArticle self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
         public static string ToJson(this UgoiraMetadata self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
         public static string ToJson(this UserList self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
-        public static string ToJson(this UserFollowing self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
+        public static string ToJson(this UserFollowList self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
         public static string ToJson(this UserBookmarkTags self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
         public static string ToJson(this IllustBookmarkDetail self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
         public static string ToJson(this SearchIllustResult self) => JsonConvert.SerializeObject(self, PixivCS.Objects.Converter.Settings);
