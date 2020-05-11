@@ -780,6 +780,21 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //黑名单用户
+        public async Task<Objects.UserList> GetUserListAsync(string UserID, string Filter = "for_ios",
+            string Offset = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v2/user/list";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("user_id", UserID),
+                ("filter", Filter)
+            };
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.UserList.FromJson(await GetResponseString(res));
+        }
+
         //Ugoira信息
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetUgoiraMetadataAsync instead.")]
         public async Task<JsonObject> UgoiraMetadata(string IllustID, bool RequireAuth = true)
