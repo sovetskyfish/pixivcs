@@ -464,6 +464,31 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //搜索
+        //search_target - 搜索类型
+        //  partial_match_for_tags  - 标签部分一致
+        //  exact_match_for_tags    - 标签完全一致
+        //  title_and_caption       - 标题说明文
+        //sort: [date_desc, date_asc]
+        //duration: [within_last_day, within_last_week, within_last_month]
+        public async Task<Objects.SearchIllustResult> GetSearchIllustAsync(string Word, string SearchTarget = "partial_match_for_tags",
+            string Sort = "date_desc", string Duration = null, string Filter = "for_ios", string Offset = null,
+            bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/search/illust";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("word", Word),
+                ("search_target", SearchTarget),
+                ("sort", Sort),
+                ("filter", Filter)
+            };
+            if (!string.IsNullOrEmpty(Duration)) query.Add(("duration", Duration));
+            if (!string.IsNullOrEmpty(Offset)) query.Add(("offset", Offset));
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.SearchIllustResult.FromJson(await GetResponseString(res));
+        }
+
         //作品收藏详情
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustBookmarkDetailAsync instead.")]
         public async Task<JsonObject> IllustBookmarkDetail(string IllustID, bool RequireAuth = true)
