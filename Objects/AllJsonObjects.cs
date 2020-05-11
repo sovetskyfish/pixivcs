@@ -683,7 +683,7 @@ namespace PixivCS.Objects
         public bool? HasReplies { get; set; }
 
         [JsonProperty("parent_comment", NullValueHandling = NullValueHandling.Ignore)]
-        public PrivacyPolicy ParentComment { get; set; }
+        public Comment ParentComment { get; set; }
     }
 
     public partial class IllustComments
