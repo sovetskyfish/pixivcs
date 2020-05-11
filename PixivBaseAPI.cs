@@ -435,7 +435,7 @@ namespace PixivCS
             var resJSON = Objects.AuthResult.FromJson(await GetResponseString(res));
             AccessToken = resJSON.Response.AccessToken;
             UserID = resJSON.Response.User.Id;
-            RefreshToken = resJSON.Response.RefreshToken;
+            this.RefreshToken = resJSON.Response.RefreshToken;
             if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
