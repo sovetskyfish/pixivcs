@@ -117,7 +117,7 @@ namespace PixivCS
         }
 
         //用户收藏
-        public async Task<Objects.UserBookmarksIllust> GetUserBookmarksIllustAsync(string UserID, string Restrict = "public",
+        public async Task<Objects.UserIllusts> GetUserBookmarksIllustAsync(string UserID, string Restrict = "public",
             string Filter = "for_ios", string MaxBookmarkID = null, string Tag = null,
             bool RequireAuth = true)
         {
@@ -150,7 +150,7 @@ namespace PixivCS
         }
 
         //关注者的新作品
-        public async Task<Objects.IllustFollow> GetIllustFollowAsync(string Restrict = "public", string Offset = null,
+        public async Task<Objects.UserIllusts> GetIllustFollowAsync(string Restrict = "public", string Offset = null,
             bool RequireAuth = true)
         {
             string url = "https://app-api.pixiv.net/v2/illust/follow";
