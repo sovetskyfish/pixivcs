@@ -537,6 +537,27 @@ namespace PixivCS
             return JsonObject.Parse(await GetResponseString(res));
         }
 
+        //新增收藏
+        public async Task PostIllustBookmarkAddAsync(string IllustID, string Restrict = "public",
+            List<string> Tags = null, bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v2/illust/bookmark/add";
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+                { "illust_id", IllustID },
+                { "restrict", Restrict }
+            };
+            string tags = "";
+            if (Tags != null)
+                foreach (var i in Tags)
+                    tags += (i + " ");
+            tags = tags.Trim();
+            if (tags != "")
+                data.Add("tags", HttpUtility.UrlEncode(tags));
+            await RequestCall("POST", url, Body: new FormUrlEncodedContent(data),
+                RequireAuth: RequireAuth);
+        }
+
         //删除收藏
         [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use PostIllustBookmarkDeleteAsync instead.")]
         public async Task<JsonObject> IllustBookmarkDelete(string IllustID, bool RequireAuth = true)
