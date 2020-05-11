@@ -398,7 +398,6 @@ namespace PixivCS
         //作品排行
         //mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
         //date: yyyy-mm-dd
-        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use GetIllustRankingAsync instead.")]
         public async Task<Objects.UserIllusts> GetIllustRankingAsync(string Mode = "day", string Filter = "for_ios",
             string Date = null, string Offset = null, bool RequireAuth = true)
         {
@@ -425,6 +424,18 @@ namespace PixivCS
             };
             var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
             return JsonObject.Parse(await GetResponseString(res));
+        }
+
+        //趋势标签
+        public async Task<Objects.TrendingTagsIllust> GetTrendingTagsIllustAsync(string Filter = "for_ios", bool RequireAuth = true)
+        {
+            string url = "https://app-api.pixiv.net/v1/trending-tags/illust";
+            List<(string, string)> query = new List<(string, string)>
+            {
+                ("filter", Filter)
+            };
+            var res = await RequestCall("GET", url, Query: query, RequireAuth: RequireAuth);
+            return Objects.TrendingTagsIllust.FromJson(await GetResponseString(res));
         }
 
         //搜索
