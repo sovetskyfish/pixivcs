@@ -10,8 +10,8 @@ namespace PixivCS
 {
     public class PixivAppAPI : PixivBaseAPI
     {
-        public PixivAppAPI(string AccessToken, string RefreshToken, string UserID, bool ExperimentalConnection = false, int RefreshInterval = 45) :
-            base(AccessToken, RefreshToken, UserID, ExperimentalConnection, RefreshInterval)
+        public PixivAppAPI(string AccessToken, string RefreshToken, string UserID, bool ExperimentalConnection = false) :
+            base(AccessToken, RefreshToken, UserID, ExperimentalConnection)
         { }
 
         public PixivAppAPI() : base() { }
