@@ -10,8 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Security.Cryptography;
-using Windows.Data.Json;
-using Windows.UI.Xaml;
+using System.Timers;
 
 namespace PixivCS
 {
@@ -82,11 +81,11 @@ namespace PixivCS
             set
             {
                 refreshInterval = value;
-                if (value > 0) refreshTimer.Interval = TimeSpan.FromMinutes(value);
+                if (value > 0) refreshTimer.Interval = TimeSpan.FromMinutes(value).TotalMilliseconds;
             }
         }
 
-        DispatcherTimer refreshTimer = new DispatcherTimer();
+        Timer refreshTimer = new Timer();
 
         //自动刷新登录时执行
         public event EventHandler<RefreshEventArgs> TokenRefreshed;
@@ -99,8 +98,8 @@ namespace PixivCS
             this.UserID = UserID;
             this.ExperimentalConnection = ExperimentalConnection;
             this.RefreshInterval = RefreshInterval;
-            refreshTimer.Interval = TimeSpan.FromMinutes(RefreshInterval);
-            refreshTimer.Tick += RefreshTimer_Tick;
+            refreshTimer.Interval = TimeSpan.FromMinutes(RefreshInterval).TotalMilliseconds;
+            refreshTimer.Elapsed += RefreshTimer_Tick;
         }
 
         private async void RefreshTimer_Tick(object sender, object e)
@@ -167,17 +166,17 @@ namespace PixivCS
                         byte[] result;
                         HttpStatusCode statusCode;
                         Dictionary<string, string> headersDictionary = new Dictionary<string, string>();
-                        foreach (var header in headers.Split("\r\n"))
+                        foreach (var header in headers.Split(new[] { "\r\n" }, StringSplitOptions.None))
                         {
                             if (string.IsNullOrWhiteSpace(header)) break;
                             if (!header.Contains(": "))
                             {
-                                var status = header.Split(" ");
+                                var status = header.Split(new[] { " " }, StringSplitOptions.None);
                                 statusCode = (HttpStatusCode)Convert.ToInt32(status[1]);
                             }
                             else
                             {
-                                var pair = header.Split(": ");
+                                var pair = header.Split(new[] { ": " }, StringSplitOptions.None);
                                 headersDictionary.Add(pair[0], pair[1]);
                             }
                         }
@@ -263,8 +262,8 @@ namespace PixivCS
 
                 var request = new HttpRequestMessage(new HttpMethod(Method), queryUrl);
                 if (Headers != null)
-                    foreach (var (k, v) in Headers)
-                        request.Headers.Add(k, v);
+                    foreach (var pair in Headers)
+                        request.Headers.Add(pair.Key, pair.Value);
 
                 if (Body != null)
                     request.Content = Body;
@@ -290,52 +289,6 @@ namespace PixivCS
             clientID = ClientID;
             clientSecret = ClientSecret;
             hashSecret = HashSecret;
-        }
-
-        //用户名和密码登录
-        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use AuthAsync instead.")]
-        public async Task<JsonObject> Auth(string Username, string Password)
-        {
-            string MD5Hash(string Input)
-            {
-                if (string.IsNullOrEmpty(Input)) return null;
-                using (var md5 = MD5.Create())
-                {
-                    var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(Input.Trim()));
-                    StringBuilder builder = new StringBuilder();
-                    for (int i = 0; i < bytes.Length; i++)
-                        builder.Append(bytes[i].ToString("x2"));
-                    return builder.ToString();
-                }
-            }
-            string url = "https://oauth.secure.pixiv.net/auth/token";
-            string time = DateTime.UtcNow.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:sszzz");
-
-            Dictionary<string, string> headers = new Dictionary<string, string>
-            {
-                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" },
-                { "X-Client-Time", time },
-                { "X-Client-Hash", MD5Hash(time+hashSecret) }
-            };
-            Dictionary<string, string> data = new Dictionary<string, string>
-            {
-                { "get_secure_url", "1" },
-                { "client_id", clientID },
-                { "client_secret", clientSecret },
-                { "grant_type", "password" },
-                { "username", Username },
-                { "password", Password }
-            };
-            var res = await RequestCall("POST", url, headers, Body: new FormUrlEncodedContent(data));
-            int status = (int)res.StatusCode;
-            if (!(status == 200 || status == 301 || status == 302))
-                throw new PixivException("[ERROR] Auth() failed! Check Username and Password.");
-            var resJSON = JsonObject.Parse(await GetResponseString(res));
-            AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
-            UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
-            RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
-            if (RefreshInterval > 0) refreshTimer.Start();
-            return resJSON;
         }
 
         //用户名和密码登录
@@ -379,35 +332,6 @@ namespace PixivCS
             AccessToken = resJSON.Response.AccessToken;
             UserID = resJSON.Response.User.Id;
             RefreshToken = resJSON.Response.RefreshToken;
-            if (RefreshInterval > 0) refreshTimer.Start();
-            return resJSON;
-        }
-
-        //RefreshToken登录
-        [Obsolete("Methods returning JsonObject objects will be deprecated in the future. Use AuthAsync instead.")]
-        public async Task<JsonObject> Auth(string RefreshToken)
-        {
-            string url = "https://oauth.secure.pixiv.net/auth/token";
-            Dictionary<string, string> headers = new Dictionary<string, string>
-            {
-                { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" }
-            };
-            Dictionary<string, string> data = new Dictionary<string, string>
-            {
-                { "get_secure_url", "1" },
-                { "client_id", clientID },
-                { "client_secret", clientSecret },
-                { "grant_type", "refresh_token" },
-                { "refresh_token", RefreshToken }
-            };
-            var res = await RequestCall("POST", url, headers, Body: new FormUrlEncodedContent(data));
-            int status = (int)res.StatusCode;
-            if (!(status == 200 || status == 301 || status == 302))
-                throw new PixivException("[ERROR] Auth() failed! Check Username and Password.");
-            var resJSON = JsonObject.Parse(await GetResponseString(res));
-            AccessToken = resJSON["response"].GetObject()["access_token"].GetString();
-            UserID = resJSON["response"].GetObject()["user"].GetObject()["id"].GetString();
-            this.RefreshToken = resJSON["response"].GetObject()["refresh_token"].GetString();
             if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
