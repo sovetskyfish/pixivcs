@@ -74,19 +74,6 @@ namespace PixivCS
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
 
-        private int refreshInterval;
-        public int RefreshInterval
-        {
-            get => refreshInterval;
-            set
-            {
-                refreshInterval = value;
-                if (value > 0) refreshTimer.Interval = TimeSpan.FromMinutes(value).TotalMilliseconds;
-            }
-        }
-
-        Timer refreshTimer = new Timer();
-
         //自动刷新登录时执行
         public event EventHandler<RefreshEventArgs> TokenRefreshed;
 
@@ -97,9 +84,6 @@ namespace PixivCS
             this.RefreshToken = RefreshToken;
             this.UserID = UserID;
             this.ExperimentalConnection = ExperimentalConnection;
-            this.RefreshInterval = RefreshInterval;
-            refreshTimer.Interval = TimeSpan.FromMinutes(RefreshInterval).TotalMilliseconds;
-            refreshTimer.Elapsed += RefreshTimer_Tick;
         }
 
         private async void RefreshTimer_Tick(object sender, object e)
@@ -120,7 +104,7 @@ namespace PixivCS
         public PixivBaseAPI() : this(null, null, null) { }
 
         public PixivBaseAPI(PixivBaseAPI BaseAPI) :
-            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection, BaseAPI.RefreshInterval)
+            this(BaseAPI.AccessToken, BaseAPI.RefreshToken, BaseAPI.UserID, BaseAPI.ExperimentalConnection)
         { }
 
         //用于生成带参数的url
@@ -332,7 +316,6 @@ namespace PixivCS
             AccessToken = resJSON.Response.AccessToken;
             UserID = resJSON.Response.User.Id;
             RefreshToken = resJSON.Response.RefreshToken;
-            if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
 
@@ -360,7 +343,6 @@ namespace PixivCS
             AccessToken = resJSON.Response.AccessToken;
             UserID = resJSON.Response.User.Id;
             this.RefreshToken = resJSON.Response.RefreshToken;
-            if (RefreshInterval > 0) refreshTimer.Start();
             return resJSON;
         }
     }
