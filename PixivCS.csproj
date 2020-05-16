@@ -1,6 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.5.5</Version>
+    <Authors>TobiichiAmane</Authors>
+    <Company />
+    <Description>C# version of Pixiv API in .NET Standard 2.0. Used by Pixiv UWP.</Description>
+    <PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/tobiichiamane/pixivcs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tobiichiamane/pixivcs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Pixiv PixivAPI</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".gitattributes" />
