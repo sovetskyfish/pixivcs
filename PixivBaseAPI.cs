@@ -74,31 +74,13 @@ namespace PixivCS
         public string UserID { get; internal set; }
         public bool ExperimentalConnection { get; set; }
 
-        //自动刷新登录时执行
-        public event EventHandler<RefreshEventArgs> TokenRefreshed;
-
         public PixivBaseAPI(string AccessToken, string RefreshToken, string UserID,
-            bool ExperimentalConnection = false, int RefreshInterval = 45)
+            bool ExperimentalConnection = false)
         {
             this.AccessToken = AccessToken;
             this.RefreshToken = RefreshToken;
             this.UserID = UserID;
             this.ExperimentalConnection = ExperimentalConnection;
-        }
-
-        private async void RefreshTimer_Tick(object sender, object e)
-        {
-            //每隔一定的时间刷新登录
-            try
-            {
-                _ = await AuthAsync(RefreshToken);
-            }
-            catch
-            {
-                TokenRefreshed?.Invoke(this, new RefreshEventArgs(null, null, false));
-                return;
-            }
-            TokenRefreshed?.Invoke(this, new RefreshEventArgs(AccessToken, RefreshToken, true));
         }
 
         public PixivBaseAPI() : this(null, null, null) { }
