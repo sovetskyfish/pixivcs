@@ -273,7 +273,7 @@ namespace PixivCS
                 }
             }
             string url = "https://oauth.secure.pixiv.net/auth/token";
-            string time = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
+            string time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss+00:00");
             Dictionary<string, string> headers = new Dictionary<string, string>
             {
                 { "User-Agent", "PixivAndroidApp/5.0.64 (Android 6.0)" },
