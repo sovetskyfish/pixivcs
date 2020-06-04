@@ -234,7 +234,7 @@ namespace PixivCS
                 if (Body != null)
                     request.Content = Body;
 
-                return await _client.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+                return await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             }
         }
 
