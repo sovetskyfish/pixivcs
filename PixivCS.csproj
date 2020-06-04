@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.5.9</Version>
+    <Version>0.5.10</Version>
     <Authors>TobiichiAmane</Authors>
     <Company />
     <Description>C# version of Pixiv API in .NET Standard 2.0. Used by Pixiv UWP.</Description>
