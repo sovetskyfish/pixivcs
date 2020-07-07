@@ -40,7 +40,23 @@ namespace PixivCS
         // 参考自下面的链接
         // https://docs.microsoft.com/en-us/aspnet/web-api/overview/advanced/calling-a-web-api-from-a-net-client#create-and-initialize-httpclient
         // https://stackoverflow.com/questions/15705092/do-httpclient-and-httpclienthandler-have-to-be-disposed
-        private static readonly HttpClient _client = new HttpClient();
+        private static HttpClient _client = new HttpClient();
+
+        //允许设置代理
+        public static void SetProxy(IWebProxy Proxy)
+        {
+            HttpClientHandler handler = new HttpClientHandler()
+            {
+                Proxy = Proxy
+            };
+            _client = new HttpClient(handler, true);
+        }
+
+        //清空代理
+        public static void ClearProxy()
+        {
+            _client = new HttpClient();
+        }
 
         internal string clientID = "MOBrBDS8blbauoSck0ZfDbtuzpyT";
         internal string clientSecret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj";
