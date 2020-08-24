@@ -76,12 +76,12 @@ namespace PixivCS
         };
         public Dictionary<string, string> TargetSNs { get; set; } = new Dictionary<string, string>()
         {
-            {"210.140.131.188","35C1AFCF189CA529709BDC9A" },
+            {"210.140.131.188","346B03F05A00DD2FFAE58853" },
             {"210.140.92.142","2387DB20E84EFCF82492545C" }
         };
         public Dictionary<string, string> TargetTPs { get; set; } = new Dictionary<string, string>()
         {
-            {"210.140.131.188","D684756F1EF93CED5139AA9983FEFB6EE25EA820" },
+            {"210.140.131.188","07954CC4735FA33B629899E1DC2591500B090FB5" },
             {"210.140.92.142","F4A431620F42E4D10EB42621C6948E3CD5014FB0" }
         };
 
